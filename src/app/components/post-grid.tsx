@@ -1,11 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { PostCard } from "~/app/_components/post-card";
 import {
   fetchPostsAction,
   fetchPostsByFilterAction,
 } from "../actions/post-actions";
 import type { Card } from "~/app/types";
+import { Skeleton } from "~/components/ui/skeleton";
 
 // Define the PostGridProps interface
 interface PostGridProps {
@@ -14,6 +15,40 @@ interface PostGridProps {
   majorId: number | null;
   graduationYear: number | null;
 }
+
+const PostGridSkeleton = () => {
+  return (
+    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {[...Array(12)].map((_, i) => (
+        <div key={i} className="flex flex-col space-y-3">
+          <Skeleton className="h-48 w-full rounded-lg" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const FilteredPosts = ({
+  posts,
+  loading,
+}: {
+  posts: Card[];
+  loading: boolean;
+}) => {
+  if (loading) return <PostGridSkeleton />;
+
+  return (
+    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {posts.map((card) => (
+        <PostCard key={card.id} card={card} index={card.id ?? 0} />
+      ))}
+    </div>
+  );
+};
 
 // PostGrid component
 export const PostGrid = ({
@@ -83,11 +118,9 @@ export const PostGrid = ({
       <h1 className="mb-8 text-center text-3xl font-bold text-foreground">
         Find Your College Mentor
       </h1>
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {allPosts.map((card) => (
-          <PostCard key={card.id} card={card} index={card.id ?? 0} />
-        ))}
-      </div>
+      <Suspense fallback={<PostGridSkeleton />}>
+        <FilteredPosts posts={allPosts} loading={loading} />
+      </Suspense>
       {allPosts.length > 0 && (
         <div className="mt-12 flex justify-center">
           <button
