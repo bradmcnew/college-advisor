@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import ImageUploader from "~/app/components/image-uploader";
 import StatusToast from "~/app/profile/edit/StatusToast";
 
@@ -146,67 +147,85 @@ export default async function EditProfilePage({
     }
   };
 
-  // Extract the status from the query parameters for displaying messages
   const status = (await searchParams)?.status || "";
 
   return (
     <>
-      <div className="space-y-2 text-center">
-        <h2 className="text-3xl font-bold text-primary">Edit Your Profile</h2>
-        <p className="text-muted-foreground">Update your profile information</p>
+      <div className="flex items-center gap-4">
+        <ImageUploader currentImage={userProfile.user?.image ?? null} />
+        <div className="flex-1 text-center">
+          <h1 className="text-2xl font-bold text-primary">Edit Your Profile</h1>
+          <p className="text-md text-muted-foreground">
+            Update your profile information
+          </p>
+        </div>
+        <div className="w-[72px]" />
       </div>
 
-      <form action={handleUpdateProfile} className="space-y-4">
-        <ImageUploader currentImage={userProfile.user?.image ?? null} />
+      <form action={handleUpdateProfile} className="grid gap-3">
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2 pt-4">
+            <CardTitle className="text-sm">Biography</CardTitle>
+          </CardHeader>
+          <CardContent className="pb-4">
+            <Input
+              id="bio"
+              name="bio"
+              type="text"
+              placeholder="Tell us about yourself..."
+              required
+              defaultValue={userProfile.bio || ""}
+            />
+          </CardContent>
+        </Card>
 
-        <div>
-          <Label htmlFor="bio">Bio</Label>
-          <Input
-            id="bio"
-            name="bio"
-            type="text"
-            placeholder="Tell us about yourself..."
-            required
-            defaultValue={userProfile.bio || ""}
-          />
-        </div>
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2 pt-4">
+            <CardTitle className="text-sm">Academic Details</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-3 pb-4">
+            <div>
+              <Label htmlFor="school_year" className="text-xs">
+                School Year
+              </Label>
+              <Select
+                name="school_year"
+                required
+                defaultValue={userProfile.schoolYear}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select your current school year" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Freshman">Freshman</SelectItem>
+                  <SelectItem value="Sophomore">Sophomore</SelectItem>
+                  <SelectItem value="Junior">Junior</SelectItem>
+                  <SelectItem value="Senior">Senior</SelectItem>
+                  <SelectItem value="Graduate">Graduate</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-        <div>
-          <Label htmlFor="school_year">School Year</Label>
-          <Select
-            name="school_year"
-            required
-            defaultValue={userProfile.schoolYear}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select your current school year" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Freshman">Freshman</SelectItem>
-              <SelectItem value="Sophomore">Sophomore</SelectItem>
-              <SelectItem value="Junior">Junior</SelectItem>
-              <SelectItem value="Senior">Senior</SelectItem>
-              <SelectItem value="Graduate">Graduate</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Label htmlFor="graduation_year">Graduation Year</Label>
-          <Input
-            id="graduation_year"
-            name="graduation_year"
-            type="number"
-            min={new Date().getFullYear()}
-            max={new Date().getFullYear() + 10}
-            placeholder="e.g., 2027"
-            required
-            defaultValue={userProfile.graduationYear || ""}
-          />
-        </div>
+            <div>
+              <Label htmlFor="graduation_year" className="text-xs">
+                Graduation Year
+              </Label>
+              <Input
+                id="graduation_year"
+                name="graduation_year"
+                type="number"
+                min={new Date().getFullYear()}
+                max={new Date().getFullYear() + 10}
+                placeholder="e.g., 2027"
+                required
+                defaultValue={userProfile.graduationYear || ""}
+              />
+            </div>
+          </CardContent>
+        </Card>
 
         <Button type="submit" className="w-full">
-          Update Profile
+          Save Changes
         </Button>
       </form>
 
