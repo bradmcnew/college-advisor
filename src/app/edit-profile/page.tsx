@@ -281,6 +281,8 @@ export default async function EditProfilePage({
               id="graduation_year"
               name="graduation_year"
               type="number"
+              min={new Date().getFullYear()}
+              max={new Date().getFullYear() + 10}
               placeholder="e.g., 2027"
               required
               defaultValue={userProfile.graduationYear || ""}
