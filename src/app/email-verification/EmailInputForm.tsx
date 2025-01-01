@@ -12,13 +12,13 @@ import { userProfiles } from "~/server/db/schema";
 interface EmailInputFormProps {
   message?: string;
   isSuccess?: boolean;
-  hasExistingEmail?: boolean;
+  isVerified?: boolean;
 }
 
 export default async function EmailInputForm({
   message,
   isSuccess,
-  hasExistingEmail = false,
+  isVerified = false,
 }: EmailInputFormProps) {
   const handleSubmit = async (formData: FormData) => {
     "use server";
@@ -117,7 +117,7 @@ export default async function EmailInputForm({
       <div className="mx-auto max-w-md space-y-6 rounded-lg border border-border/40 bg-card p-8 text-card-foreground shadow-lg backdrop-blur-md transition-all duration-300 dark:shadow-primary/5 sm:p-12">
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold text-primary">
-            {hasExistingEmail
+            {isVerified
               ? "Edit Your College Email"
               : "Enter Your College Email"}
           </h1>

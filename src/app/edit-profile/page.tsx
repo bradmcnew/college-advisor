@@ -57,7 +57,7 @@ export default async function EditProfilePage({
 
   // If the user is not a mentor or their .edu email is not verified, redirect them
   if (!userProfile?.isMentor || !userProfile.isEduVerified) {
-    redirect("/email-verification?status=sent");
+    redirect("/email-verification");
   }
 
   // Function to handle profile updates

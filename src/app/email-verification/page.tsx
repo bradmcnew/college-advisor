@@ -54,11 +54,11 @@ export default async function EmailVerificationPage({
   const userProfile = await db.query.userProfiles.findFirst({
     where: (table, { eq }) => eq(table.userId, session.userId),
     columns: {
-      eduEmail: true,
+      isEduVerified: true,
     },
   });
 
-  const hasExistingEmail = !!userProfile?.eduEmail;
+  const isVerified = !!userProfile?.isEduVerified;
 
   // Render the SentEmailVerification component if the status is 'sent'
   if (status === "sent") {
@@ -70,7 +70,7 @@ export default async function EmailVerificationPage({
     <EmailInputForm
       message={message}
       isSuccess={isSuccess}
-      hasExistingEmail={hasExistingEmail}
+      isVerified={isVerified}
     />
   );
 }

@@ -120,7 +120,10 @@ export default async function ViewProfilePage() {
         </div>
       </div>
     );
-  } catch (error) {
+  } catch (error: any) {
+    if (error.digest && error.digest.startsWith("NEXT_REDIRECT")) {
+      throw error;
+    }
     console.error("Error fetching profile:", error);
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4 text-foreground">
