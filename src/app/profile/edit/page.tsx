@@ -74,6 +74,14 @@ export default async function EditProfilePage({
     );
     const profileImageUrl = formData.get("profile_image_url") as string | null;
 
+    // Debugging: Log the form data
+    console.log("Form Data Received:", {
+      bio,
+      schoolYear,
+      graduationYear,
+      profileImageUrl,
+    });
+
     // Basic validation
     if (!bio || !schoolYear || isNaN(graduationYear)) {
       redirect("/profile/edit?status=invalid-input");
@@ -102,7 +110,7 @@ export default async function EditProfilePage({
       bio === userProfile.bio &&
       schoolYear === userProfile.schoolYear &&
       graduationYear === userProfile.graduationYear &&
-      !profileImageUrl;
+      (!profileImageUrl || profileImageUrl === userProfile.user?.image);
 
     if (isProfileUnchanged) {
       redirect("/profile/edit?status=profile-updated");
@@ -151,18 +159,20 @@ export default async function EditProfilePage({
 
   return (
     <>
-      <div className="flex items-center gap-4">
-        <ImageUploader currentImage={userProfile.user?.image ?? null} />
-        <div className="flex-1 text-center">
-          <h1 className="text-2xl font-bold text-primary">Edit Your Profile</h1>
-          <p className="text-md text-muted-foreground">
-            Update your profile information
-          </p>
-        </div>
-        <div className="w-[72px]" />
-      </div>
-
       <form action={handleUpdateProfile} className="grid gap-3">
+        <div className="flex items-center gap-4">
+          <ImageUploader currentImage={userProfile.user?.image ?? null} />
+          <div className="flex-1 text-center">
+            <h1 className="text-2xl font-bold text-primary">
+              Edit Your Profile
+            </h1>
+            <p className="text-md text-muted-foreground">
+              Update your profile information
+            </p>
+          </div>
+          <div className="w-[72px]" />
+        </div>
+
         <Card className="shadow-sm">
           <CardHeader className="pb-2 pt-4">
             <CardTitle className="text-sm">Biography</CardTitle>

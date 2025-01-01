@@ -5,7 +5,6 @@ import { useToast } from "~/hooks/use-toast";
 import { UploadButton } from "~/utils/uploadthing";
 import { Input } from "~/components/ui/input";
 import Image from "next/image";
-
 interface ImageUploaderProps {
   currentImage: string | null;
 }
@@ -60,13 +59,7 @@ export default function ImageUploader({ currentImage }: ImageUploaderProps) {
           });
         }}
       />
-      <Input
-        id="profile_image_url"
-        name="profile_image_url"
-        type="hidden"
-        value={imageUrl}
-        readOnly
-      />
+      <Input name="profile_image_url" type="hidden" value={imageUrl} readOnly />
     </div>
   );
 }
