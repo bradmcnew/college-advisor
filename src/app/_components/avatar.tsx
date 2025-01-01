@@ -51,7 +51,7 @@ export function AvatarIcon({ profilePic }: { profilePic: string }) {
             Quick Actions
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <Link href="/view-profile">
+          <Link href="/profile/view">
             <DropdownMenuItem className="text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
               View Profile
             </DropdownMenuItem>

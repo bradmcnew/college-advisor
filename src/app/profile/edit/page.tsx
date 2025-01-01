@@ -14,7 +14,7 @@ import {
 } from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
 import ImageUploader from "~/app/components/image-uploader";
-import StatusToast from "~/app/edit-profile/StatusToast";
+import StatusToast from "~/app/profile/edit/StatusToast";
 
 // EditProfileProps Interface
 interface EditProfileProps {
@@ -75,7 +75,7 @@ export default async function EditProfilePage({
 
     // Basic validation
     if (!bio || !schoolYear || isNaN(graduationYear)) {
-      redirect("/edit-profile?status=invalid-input");
+      redirect("/profile/edit?status=invalid-input");
     }
 
     // Validate schoolYear
@@ -87,13 +87,13 @@ export default async function EditProfilePage({
       "Graduate",
     ];
     if (!validSchoolYears.includes(schoolYear)) {
-      redirect("/edit-profile?status=invalid-school-year");
+      redirect("/profile/edit?status=invalid-school-year");
     }
 
     // Validate graduationYear (e.g., should be current year or future)
     const currentYear = new Date().getFullYear();
     if (graduationYear < currentYear || graduationYear > currentYear + 10) {
-      redirect("/edit-profile?status=invalid-graduation-year");
+      redirect("/profile/edit?status=invalid-graduation-year");
     }
 
     // Check if any change has been made
@@ -104,7 +104,7 @@ export default async function EditProfilePage({
       !profileImageUrl;
 
     if (isProfileUnchanged) {
-      redirect("/edit-profile?status=profile-updated");
+      redirect("/profile/edit?status=profile-updated");
     }
 
     try {
@@ -134,7 +134,7 @@ export default async function EditProfilePage({
       }
 
       // Redirect to the edit profile page upon successful update
-      redirect("/edit-profile?status=profile-updated");
+      redirect("/profile/edit?status=profile-updated");
     } catch (error: any) {
       // If the error is a NEXT_REDIRECT, rethrow it to allow Next.js to handle the redirect
       if (error.digest && error.digest.startsWith("NEXT_REDIRECT")) {
@@ -142,7 +142,7 @@ export default async function EditProfilePage({
       }
       console.error("Error during profile update:", error);
       // Redirect to the edit profile page with an error status
-      redirect("/edit-profile?status=error");
+      redirect("/profile/edit?status=error");
     }
   };
 
@@ -150,71 +150,66 @@ export default async function EditProfilePage({
   const status = (await searchParams)?.status || "";
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-200 via-indigo-200 to-emerald-200 px-4 dark:from-gray-950 dark:via-slate-900 dark:to-blue-950">
-      <div className="relative mx-auto max-w-md space-y-6 rounded-lg bg-card p-8 text-card-foreground shadow-lg transition-all duration-300 dark:shadow-primary/5 sm:p-12">
-        <div className="space-y-2 text-center">
-          <h2 className="text-3xl font-bold text-green-700 dark:text-green-300">
-            Edit Your Profile
-          </h2>
+    <>
+      <div className="space-y-2 text-center">
+        <h2 className="text-3xl font-bold text-primary">Edit Your Profile</h2>
+      </div>
+
+      <form action={handleUpdateProfile} className="space-y-4">
+        <ImageUploader currentImage={userProfile.user?.image ?? null} />
+
+        <div>
+          <Label htmlFor="bio">Bio</Label>
+          <Input
+            id="bio"
+            name="bio"
+            type="text"
+            placeholder="Tell us about yourself..."
+            required
+            defaultValue={userProfile.bio || ""}
+          />
         </div>
 
-        <form action={handleUpdateProfile} className="space-y-4">
-          <ImageUploader currentImage={userProfile.user?.image ?? null} />
-          <div>
-            <Label htmlFor="bio">Bio</Label>
-            <Input
-              id="bio"
-              name="bio"
-              type="text"
-              placeholder="Tell us about yourself..."
-              required
-              defaultValue={userProfile.bio || ""}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:border-gray-600"
-            />
-          </div>
+        <div>
+          <Label htmlFor="school_year">School Year</Label>
+          <Select
+            name="school_year"
+            required
+            defaultValue={userProfile.schoolYear}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select your current school year" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Freshman">Freshman</SelectItem>
+              <SelectItem value="Sophomore">Sophomore</SelectItem>
+              <SelectItem value="Junior">Junior</SelectItem>
+              <SelectItem value="Senior">Senior</SelectItem>
+              <SelectItem value="Graduate">Graduate</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-          <div>
-            <Label htmlFor="school_year">School Year</Label>
-            <Select
-              name="school_year"
-              required
-              defaultValue={userProfile.schoolYear}
-            >
-              <SelectTrigger className="w-full dark:bg-gray-700">
-                <SelectValue placeholder="Select your current school year" />
-              </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-gray-700">
-                <SelectItem value="Freshman">Freshman</SelectItem>
-                <SelectItem value="Sophomore">Sophomore</SelectItem>
-                <SelectItem value="Junior">Junior</SelectItem>
-                <SelectItem value="Senior">Senior</SelectItem>
-                <SelectItem value="Graduate">Graduate</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <div>
+          <Label htmlFor="graduation_year">Graduation Year</Label>
+          <Input
+            id="graduation_year"
+            name="graduation_year"
+            type="number"
+            min={new Date().getFullYear()}
+            max={new Date().getFullYear() + 10}
+            placeholder="e.g., 2027"
+            required
+            defaultValue={userProfile.graduationYear || ""}
+          />
+        </div>
 
-          <div>
-            <Label htmlFor="graduation_year">Graduation Year</Label>
-            <Input
-              id="graduation_year"
-              name="graduation_year"
-              type="number"
-              min={new Date().getFullYear()}
-              max={new Date().getFullYear() + 10}
-              placeholder="e.g., 2027"
-              required
-              defaultValue={userProfile.graduationYear || ""}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:border-gray-600"
-            />
-          </div>
+        <Button type="submit" className="w-full">
+          Update Profile
+        </Button>
+      </form>
 
-          <Button type="submit" className="w-full">
-            Update Profile
-          </Button>
-        </form>
-
-        <StatusToast status={status} />
-      </div>
-    </div>
+      <StatusToast status={status} />
+    </>
   );
 }
