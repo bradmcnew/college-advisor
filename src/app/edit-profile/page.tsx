@@ -14,6 +14,7 @@ import {
 } from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
 import ImageUploader from "~/app/components/image-uploader";
+import StatusToast from "~/app/edit-profile/StatusToast";
 
 // EditProfileProps Interface
 interface EditProfileProps {
@@ -147,39 +148,6 @@ export default async function EditProfilePage({
 
   // Extract the status from the query parameters for displaying messages
   const status = (await searchParams)?.status || "";
-  let displayMessage = "";
-  let isDisplaySuccess = false;
-
-  switch (status) {
-    case "invalid-input":
-      displayMessage = "Please provide all the required information correctly.";
-      break;
-    case "error":
-      displayMessage = "An unexpected error occurred. Please try again later.";
-      break;
-    case "profile-updated":
-      displayMessage = "Your profile has been successfully updated!";
-      isDisplaySuccess = true;
-      break;
-    case "not-found":
-      displayMessage = "User profile not found.";
-      break;
-    case "invalid-image-type":
-      displayMessage = "Invalid image type. Please upload a JPEG, PNG, or GIF.";
-      break;
-    case "image-too-large":
-      displayMessage = "Image is too large. Maximum size is 5MB.";
-      break;
-    case "invalid-school-year":
-      displayMessage = "Selected school year is invalid.";
-      break;
-    case "invalid-graduation-year":
-      displayMessage =
-        "Graduation year must be the current year or a future year.";
-      break;
-    default:
-      displayMessage = "";
-  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-200 via-indigo-200 to-emerald-200 px-4 dark:from-gray-950 dark:via-slate-900 dark:to-blue-950">
@@ -188,15 +156,6 @@ export default async function EditProfilePage({
           <h2 className="text-3xl font-bold text-green-700 dark:text-green-300">
             Edit Your Profile
           </h2>
-          {displayMessage && (
-            <p
-              className={`text-sm ${
-                isDisplaySuccess ? "text-green-500" : "text-destructive"
-              }`}
-            >
-              {displayMessage}
-            </p>
-          )}
         </div>
 
         <form action={handleUpdateProfile} className="space-y-4">
@@ -253,6 +212,8 @@ export default async function EditProfilePage({
             Update Profile
           </Button>
         </form>
+
+        <StatusToast status={status} />
       </div>
     </div>
   );

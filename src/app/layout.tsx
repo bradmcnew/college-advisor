@@ -6,6 +6,7 @@ import { NavBarBase } from "~/app/_components/navigation-client";
 import { getProfilePic } from "~/server/queries";
 import { auth } from "~/server/auth";
 import { ThemeProvider } from "~/components/theme-provider";
+import { Toaster } from "~/components/ui/toaster";
 
 // uploadthing
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
@@ -55,6 +56,7 @@ export default async function RootLayout({
           {children}
           {modal}
           <div id="modal-root" />
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

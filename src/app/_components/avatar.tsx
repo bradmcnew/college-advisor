@@ -19,7 +19,12 @@ const AvatarPic = ({ profilePic }: { profilePic: string }) => {
   return (
     <div className="h-10 w-10">
       <Avatar>
-        <AvatarImage src={profilePic} alt="Profile Picture" />
+        <AvatarImage
+          src={profilePic}
+          alt="Profile Picture"
+          width={48}
+          height={48}
+        />
         <AvatarFallback>ME</AvatarFallback>
       </Avatar>
     </div>
