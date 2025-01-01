@@ -57,11 +57,10 @@ export default async function ViewProfilePage() {
             Your Mentor Profile
           </h1>
           <p className="text-muted-foreground">
-            View and manage your profile information.
+            View and manage your profile information
           </p>
         </div>
 
-        {/* Profile Image */}
         <div className="relative mx-auto h-32 w-32 overflow-hidden rounded-full ring-2 ring-primary/20">
           <Image
             src={userProfile.user.image || "/images/placeholder.jpg"}
@@ -72,7 +71,6 @@ export default async function ViewProfilePage() {
           />
         </div>
 
-        {/* Profile Information */}
         <div className="space-y-4 divide-y divide-border">
           <div className="space-y-2 pt-4">
             <h2 className="text-lg font-semibold text-foreground">
@@ -105,15 +103,9 @@ export default async function ViewProfilePage() {
           </div>
         </div>
 
-        {/* Edit Profile Button */}
-        <div className="pt-6">
-          <Link
-            href="/profile/edit"
-            className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-900"
-          >
-            Edit Profile
-          </Link>
-        </div>
+        <Button asChild className="w-full">
+          <Link href="/profile/edit">Edit Profile</Link>
+        </Button>
       </>
     );
   } catch (error: any) {
@@ -122,10 +114,8 @@ export default async function ViewProfilePage() {
     }
     console.error("Error fetching profile:", error);
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-4 text-foreground">
-        <div className="rounded-lg bg-destructive/10 p-4 text-destructive">
-          An error occurred while loading your profile. Please try again later.
-        </div>
+      <div className="rounded-lg bg-destructive/10 p-4 text-destructive">
+        An error occurred while loading your profile. Please try again later.
       </div>
     );
   }

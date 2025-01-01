@@ -153,6 +153,7 @@ export default async function EditProfilePage({
     <>
       <div className="space-y-2 text-center">
         <h2 className="text-3xl font-bold text-primary">Edit Your Profile</h2>
+        <p className="text-muted-foreground">Update your profile information</p>
       </div>
 
       <form action={handleUpdateProfile} className="space-y-4">
