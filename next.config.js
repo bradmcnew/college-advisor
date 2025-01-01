@@ -21,6 +21,13 @@ const coreConfig = {
         pathname: "/**",
         search: "",
       },
+      {
+        protocol: "https",
+        hostname: "utfs.io",
+        port: "",
+        pathname: "/**",
+        search: "",
+      },
     ],
   },
 };

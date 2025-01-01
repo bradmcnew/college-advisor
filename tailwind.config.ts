@@ -5,7 +5,8 @@ import { withUt } from "uploadthing/tw";
 
 export default withUt({
   darkMode: ["class"],
-  content: ["./src/**/*.tsx"],
+  content: ["./src/**/*.tsx", "./src/**/*.{ts,tsx,mdx}"],
+
   theme: {
     extend: {
       fontFamily: {

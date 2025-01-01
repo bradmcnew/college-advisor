@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
+import ImageUploader from "~/app/components/image-uploader";
 
 // EditProfileProps Interface
 interface EditProfileProps {
@@ -69,7 +70,7 @@ export default async function EditProfilePage({
       formData.get("graduation_year") as string,
       10,
     );
-    const profileImageFile = formData.get("profile_image") as File | null;
+    const profileImageUrl = formData.get("profile_image_url") as string | null;
 
     // Basic validation
     if (!bio || !schoolYear || isNaN(graduationYear)) {
@@ -94,45 +95,18 @@ export default async function EditProfilePage({
       redirect("/edit-profile?status=invalid-graduation-year");
     }
 
-    // Validate profile image if uploaded
-    if (profileImageFile) {
-      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-      if (!allowedTypes.includes(profileImageFile.type)) {
-        redirect("/edit-profile?status=invalid-image-type");
-      }
-      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
-      if (profileImageFile.size > maxSizeInBytes) {
-        redirect("/edit-profile?status=image-too-large");
-      }
-    }
-
     // Check if any change has been made
     const isProfileUnchanged =
       bio === userProfile.bio &&
       schoolYear === userProfile.schoolYear &&
       graduationYear === userProfile.graduationYear &&
-      !profileImageFile;
+      !profileImageUrl;
 
     if (isProfileUnchanged) {
       redirect("/edit-profile?status=profile-updated");
     }
 
     try {
-      let imageUrl = userProfile.user?.image || "";
-
-      // Handle profile image upload if a new image is provided
-      if (profileImageFile && profileImageFile.size > 0) {
-        // Replace this with your actual image upload logic
-        imageUrl = URL.createObjectURL(profileImageFile);
-        // Update the user's image in the 'users' table
-        await db
-          .update(users)
-          .set({
-            image: imageUrl,
-          })
-          .where(eq(users.id, session.userId)); // Ensure 'id' matches your primary key
-      }
-
       // Update the userProfiles table with the additional information
       await db
         .update(userProfiles)
@@ -147,6 +121,16 @@ export default async function EditProfilePage({
           graduationYear,
         })
         .where(eq(userProfiles.userId, session.userId));
+
+      // Update the user's image in the 'users' table if a new image URL is provided
+      if (profileImageUrl) {
+        await db
+          .update(users)
+          .set({
+            image: profileImageUrl,
+          })
+          .where(eq(users.id, session.userId));
+      }
 
       // Redirect to the edit profile page upon successful update
       redirect("/edit-profile?status=profile-updated");
@@ -215,33 +199,8 @@ export default async function EditProfilePage({
           )}
         </div>
 
-        <form
-          action={handleUpdateProfile}
-          className="space-y-4"
-          encType="multipart/form-data"
-        >
-          <div className="flex flex-col items-center">
-            {userProfile.user?.image ? (
-              <img
-                src={userProfile.user.image}
-                alt="Profile Image"
-                className="mb-4 h-24 w-24 rounded-full object-cover ring-2 ring-primary/20"
-              />
-            ) : (
-              <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-muted text-muted-foreground ring-2 ring-primary/20">
-                No Image
-              </div>
-            )}
-            <Label htmlFor="profile_image">Update Profile Image</Label>
-            <Input
-              id="profile_image"
-              name="profile_image"
-              type="file"
-              accept="image/*"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 dark:border-gray-600"
-            />
-          </div>
-
+        <form action={handleUpdateProfile} className="space-y-4">
+          <ImageUploader currentImage={userProfile.user?.image ?? null} />
           <div>
             <Label htmlFor="bio">Bio</Label>
             <Input

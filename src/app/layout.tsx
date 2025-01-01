@@ -7,6 +7,11 @@ import { getProfilePic } from "~/server/queries";
 import { auth } from "~/server/auth";
 import { ThemeProvider } from "~/components/theme-provider";
 
+// uploadthing
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "~/app/api/uploadthing/core";
+
 export const metadata: Metadata = {
   title: "College Advice - Your Guide to College Success",
   description:
@@ -46,6 +51,7 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           {isAuthenticated && <NavBarBase profilePic={profilePic} />}
+          <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
           {children}
           {modal}
           <div id="modal-root" />
