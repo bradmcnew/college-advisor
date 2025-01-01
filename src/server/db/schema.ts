@@ -29,6 +29,7 @@ export const posts = createTable(
     description: text("description"),
     createdById: varchar("created_by", { length: 255 })
       .notNull()
+      .unique()
       .references(() => users.id),
     ...timestamps,
   },
