@@ -100,7 +100,6 @@ export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
     }
 
     const payload = selectedRanges.map((range) => ({
-      mentor_id: mentorId,
       day: localToUTCDate(range.day),
       start_time: range.start_time,
       end_time: range.end_time,
@@ -121,7 +120,7 @@ export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
         variant: "destructive",
       });
     }
-  }, [selectedRanges, mentorId, toast]);
+  }, [selectedRanges, localToUTCDate, toast]);
 
   if (isLoading) {
     return <div>Loading...</div>;
