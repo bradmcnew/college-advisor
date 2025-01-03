@@ -310,9 +310,11 @@ export default function WeeklyCalendar({
                 >
                   <div
                     className={`flex h-10 cursor-pointer items-center justify-center border-t border-gray-200 ${
-                      isCellSelected(day, hour) ? "bg-blue-200" : "bg-white"
-                    } ${
-                      isCellCurrentlySelecting(day, hour) ? "bg-blue-300" : ""
+                      isCellCurrentlySelecting(day, hour)
+                        ? "bg-blue-300"
+                        : isCellSelected(day, hour)
+                          ? "bg-blue-200"
+                          : "bg-white"
                     }`}
                     onMouseDown={() => handleMouseDown(day, hour)}
                     onMouseEnter={() => handleMouseEnter(day, hour)}
