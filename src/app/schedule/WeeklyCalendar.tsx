@@ -8,8 +8,8 @@ import { Label } from "~/components/ui/label";
  */
 interface TimeRange {
   day: Date;
-  startTime: string; // "HH:MM"
-  endTime: string; // "HH:MM"
+  start_time: string; // "HH:MM"
+  end_time: string; // "HH:MM"
 }
 
 /**
@@ -17,7 +17,7 @@ interface TimeRange {
  */
 interface WeeklyCalendarProps {
   selectedRanges: TimeRange[];
-  onChange: (ranges: TimeRange[]) => void;
+  onValueChange: (ranges: TimeRange[]) => void;
 }
 
 /**
@@ -45,8 +45,8 @@ const formatHour = (hour: number): string => {
 const areAdjacent = (range1: TimeRange, range2: TimeRange): boolean => {
   if (range1.day.toDateString() !== range2.day.toDateString()) return false;
 
-  const range1End = parseInt(range1.endTime.split(":")[0] ?? "0", 10);
-  const range2Start = parseInt(range2.startTime.split(":")[0] ?? "0", 10);
+  const range1End = parseInt(range1.end_time.split(":")[0] ?? "0", 10);
+  const range2Start = parseInt(range2.start_time.split(":")[0] ?? "0", 10);
 
   return range1End === range2Start;
 };
@@ -79,8 +79,8 @@ const mergeRanges = (ranges: TimeRange[]): TimeRange[] => {
     // Sort ranges within each day by start time
     const sorted = [...dayRanges].sort(
       (a, b) =>
-        parseInt(a.startTime.split(":")[0] ?? "0", 10) -
-        parseInt(b.startTime.split(":")[0] ?? "0", 10),
+        parseInt(a.start_time.split(":")[0] ?? "0", 10) -
+        parseInt(b.start_time.split(":")[0] ?? "0", 10),
     );
 
     let current = sorted[0];
@@ -91,14 +91,14 @@ const mergeRanges = (ranges: TimeRange[]): TimeRange[] => {
         current &&
         next &&
         (areAdjacent(current, next) ||
-          parseInt(next.startTime.split(":")[0] ?? "0", 10) <
-            parseInt(current.endTime.split(":")[0] ?? "0", 10))
+          parseInt(next.start_time.split(":")[0] ?? "0", 10) <
+            parseInt(current.end_time.split(":")[0] ?? "0", 10))
       ) {
         // Merge the two ranges
-        current.endTime =
+        current.end_time =
           Math.max(
-            parseInt(current.endTime.split(":")[0] ?? "0", 10),
-            parseInt(next.endTime.split(":")[0] ?? "0", 10),
+            parseInt(current.end_time.split(":")[0] ?? "0", 10),
+            parseInt(next.end_time.split(":")[0] ?? "0", 10),
           ) + ":00";
       } else {
         if (current) mergedRanges.push(current);
@@ -117,7 +117,7 @@ const mergeRanges = (ranges: TimeRange[]): TimeRange[] => {
  */
 export default function WeeklyCalendar({
   selectedRanges,
-  onChange,
+  onValueChange,
 }: WeeklyCalendarProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{
@@ -139,8 +139,8 @@ export default function WeeklyCalendar({
     const existingRange = selectedRanges.find(
       (range) =>
         range.day.toDateString() === day.toDateString() &&
-        hour >= parseInt(range.startTime.split(":")[0] ?? "0", 10) &&
-        hour < parseInt(range.endTime.split(":")[0] ?? "0", 10),
+        hour >= parseInt(range.start_time.split(":")[0] ?? "0", 10) &&
+        hour < parseInt(range.end_time.split(":")[0] ?? "0", 10),
     );
 
     if (existingRange) {
@@ -148,7 +148,7 @@ export default function WeeklyCalendar({
       const updatedRanges = selectedRanges.filter(
         (range) => range !== existingRange,
       );
-      onChange(updatedRanges);
+      onValueChange(updatedRanges);
       return;
     }
 
@@ -194,21 +194,21 @@ export default function WeeklyCalendar({
 
       const newRange: TimeRange = {
         day: startDay,
-        startTime: `${String(startHour).padStart(2, "0")}:00`,
-        endTime: `${String(endHour).padStart(2, "0")}:00`,
+        start_time: `${String(startHour).padStart(2, "0")}:00`,
+        end_time: `${String(endHour).padStart(2, "0")}:00`,
       };
 
       // Merge the new range with existing ranges if adjacent or overlapping
       const updatedRanges = [...selectedRanges, newRange];
       const mergedRanges = mergeRanges(updatedRanges);
 
-      onChange(mergedRanges);
+      onValueChange(mergedRanges);
 
       setIsDragging(false);
       setDragStart(null);
       setDragEnd(null);
     }
-  }, [dragStart, dragEnd, onChange, selectedRanges]);
+  }, [dragStart, dragEnd, onValueChange, selectedRanges]);
 
   /**
    * Adds global mouseup listener to handle drag completion outside the calendar area.
@@ -235,8 +235,8 @@ export default function WeeklyCalendar({
     return selectedRanges.some(
       (range) =>
         range.day.toDateString() === day.toDateString() &&
-        hour >= parseInt(range.startTime.split(":")[0] ?? "0", 10) &&
-        hour < parseInt(range.endTime.split(":")[0] ?? "0", 10),
+        hour >= parseInt(range.start_time.split(":")[0] ?? "0", 10) &&
+        hour < parseInt(range.end_time.split(":")[0] ?? "0", 10),
     );
   };
 

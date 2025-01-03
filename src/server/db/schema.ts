@@ -305,12 +305,8 @@ export const meetings = createTable(
       .notNull()
       .references(() => users.id),
     mentee_id: varchar("mentee_id", { length: 255 }).references(() => users.id),
-    start_time: timestamp("start_time", {
-      withTimezone: true,
-    }).notNull(),
-    end_time: timestamp("end_time", {
-      withTimezone: true,
-    }).notNull(), // End Time of the Meeting
+    start_time: timestamp("start_time").notNull(),
+    end_time: timestamp("end_time").notNull(), // End Time of the Meeting
     meeting_url: varchar("meeting_url", { length: 512 }).notNull(),
     status: varchar("status", { length: 50 }).notNull().default("scheduled"), // Status: scheduled, completed, canceled
     created_at: timestamp("created_at").notNull().defaultNow(),

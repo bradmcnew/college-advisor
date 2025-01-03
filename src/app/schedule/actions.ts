@@ -43,12 +43,14 @@ export async function submitAvailability(
   payload: {
     mentor_id: string;
     day: string;
-    start_time: string;
-    end_time: string;
+    start_time: string; // "HH:MM"
+    end_time: string; // "HH:MM"
   }[],
 ) {
   try {
     if (payload.length === 0) return;
+
+    console.log("payload: ", payload);
 
     // Delete existing availabilities for these days
     await db.delete(availability).where(
@@ -60,18 +62,88 @@ export async function submitAvailability(
         ),
       ),
     );
+    const formattedPayload = payload.map((item) => {
+      const currentDate = new Date(); // Current date to use as the base
+      const startTimeParts = item.start_time.split(":");
+      const endTimeParts = item.end_time.split(":");
 
-    // Insert new availabilities
-    await db.insert(availability).values(
-      payload.map((item) => ({
+      // Set the hours and minutes based on the provided "HH:MM" format
+      const start_time = new Date(
+        currentDate.setHours(
+          Number(startTimeParts[0]),
+          Number(startTimeParts[1]),
+          0,
+          0,
+        ),
+      );
+      const end_time = new Date(
+        currentDate.setHours(
+          Number(endTimeParts[0]),
+          Number(endTimeParts[1]),
+          0,
+          0,
+        ),
+      );
+
+      // Log the UTC Availability for debugging
+      console.log(
+        `Storing UTC Availability: Day - ${item.day}, Start - ${start_time.toISOString()}, End - ${end_time.toISOString()}`,
+      );
+
+      return {
         mentor_id: item.mentor_id,
         day: item.day,
-        start_time: new Date(item.start_time),
-        end_time: new Date(item.end_time),
-      })),
-    );
+        start_time, // Date object
+        end_time, // Date object
+      };
+    });
+
+    await db.insert(availability).values(formattedPayload);
   } catch (error) {
     console.error("Failed to submit availability:", error);
     throw new Error("Failed to submit availability.");
+  }
+}
+
+/**
+ * Fetches the availability for a given mentor and converts it to local time.
+ * @param mentorId The ID of the mentor.
+ * @returns An array of availability objects with local times.
+ */
+export async function getAvailability(mentorId: string) {
+  try {
+    const availabilities = await db
+      .select()
+      .from(availability)
+      .where(eq(availability.mentor_id, mentorId));
+
+    return availabilities.map((avail) => {
+      console.log("start time from db: ", avail.start_time);
+      console.log("end time from db: ", avail.end_time);
+
+      // Convert UTC to local time strings in "HH:MM" format
+      const startTimeLocal = avail.start_time.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+      const endTimeLocal = avail.end_time.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+
+      console.log("start time local: ", startTimeLocal);
+      console.log("end time local: ", endTimeLocal);
+
+      return {
+        day: avail.day,
+        startTime: startTimeLocal,
+        endTime: endTimeLocal,
+      };
+    });
+  } catch (error) {
+    console.error("Failed to fetch availability:", error);
+    throw new Error("Failed to fetch availability.");
   }
 }
