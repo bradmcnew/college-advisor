@@ -1,6 +1,7 @@
 "use server";
 
 import { and, eq, inArray } from "drizzle-orm";
+import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import { meetings, availability } from "~/server/db/schema";
 
@@ -41,27 +42,26 @@ export async function submitSchedule(
  */
 export async function submitAvailability(
   payload: {
-    mentor_id: string;
     day: string;
     start_time: string; // "HH:MM"
     end_time: string; // "HH:MM"
   }[],
 ) {
+  const session = await auth();
+  const mentorId = session?.userId;
+  if (!mentorId) {
+    throw new Error("Unauthorized.");
+  }
+
   try {
-    if (payload.length === 0) return;
+    // Delete all existing availabilities for the mentor
+    await db.delete(availability).where(eq(availability.mentor_id, mentorId));
 
-    console.log("payload: ", payload);
+    if (payload.length === 0) {
+      console.log(`All availabilities deleted for mentor_id: ${mentorId}`);
+      return;
+    }
 
-    // Delete existing availabilities for these days
-    await db.delete(availability).where(
-      and(
-        eq(availability.mentor_id, payload[0]?.mentor_id ?? ""),
-        inArray(
-          availability.day,
-          payload.map((item) => item.day),
-        ),
-      ),
-    );
     const formattedPayload = payload.map((item) => {
       const currentDate = new Date(); // Current date to use as the base
       const startTimeParts = item.start_time.split(":");
@@ -91,7 +91,7 @@ export async function submitAvailability(
       );
 
       return {
-        mentor_id: item.mentor_id,
+        mentor_id: mentorId,
         day: item.day,
         start_time, // Date object
         end_time, // Date object
