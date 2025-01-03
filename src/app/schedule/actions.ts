@@ -118,23 +118,22 @@ export async function getAvailability(mentorId: string) {
       .where(eq(availability.mentor_id, mentorId));
 
     return availabilities.map((avail) => {
-      console.log("start time from db: ", avail.start_time);
-      console.log("end time from db: ", avail.end_time);
+      // Convert UTC dates to local time
+      const startLocal = new Date(avail.start_time);
+      const endLocal = new Date(avail.end_time);
 
-      // Convert UTC to local time strings in "HH:MM" format
-      const startTimeLocal = avail.start_time.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
-      const endTimeLocal = avail.end_time.toLocaleTimeString([], {
+      // Format times in local "HH:MM" format
+      const startTimeLocal = startLocal.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,
       });
 
-      console.log("start time local: ", startTimeLocal);
-      console.log("end time local: ", endTimeLocal);
+      const endTimeLocal = endLocal.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
 
       return {
         day: avail.day,
