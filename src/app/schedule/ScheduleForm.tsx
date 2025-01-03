@@ -11,85 +11,93 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import TimeBlockForm from "./TimeBlockForm";
+import TimeRangeForm from "./TimeRangeForm";
 import { useToast } from "~/hooks/use-toast";
-import { submitSchedule } from "./actions";
+import { submitAvailability } from "./actions";
 
 /**
- * Type definition for a time block.
+ * Type definition for a time range.
  */
-interface TimeBlock {
+interface TimeRange {
   day: Date;
   startTime: string; // ISO string
   endTime: string; // ISO string
 }
 
-export default function ScheduleForm() {
+interface ScheduleFormProps {
+  mentorId: string;
+}
+
+export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
   const { toast } = useToast();
   const [selectedDays, setSelectedDays] = useState<Date[]>([]);
-  const [timeBlocks, setTimeBlocks] = useState<TimeBlock[]>([]);
-  const [blockLength, setBlockLength] = useState<number>(60); // Default to 60 minutes
+  const [timeRanges, setTimeRanges] = useState<TimeRange[]>([]);
+  const [blockLength, setBlockLength] = useState<number>(15); // Default to 15 minutes
 
   /**
    * Handles the selection and deselection of days.
    */
   const handleDaySelect = useCallback((days: Date[] | undefined) => {
     setSelectedDays(days || []);
+    // Remove time ranges for unselected days
+    setTimeRanges(
+      (prev) =>
+        prev.filter((range) =>
+          days?.some(
+            (selectedDay) =>
+              selectedDay.toDateString() === range.day.toDateString(),
+          ),
+        ) || [],
+    );
   }, []);
 
   /**
-   * Handles changes in time blocks for a specific day.
+   * Handles changes in time ranges for a specific day.
    */
-  const handleTimeBlockChange = useCallback(
-    (day: Date, newBlocks: TimeBlock[]) => {
-      setTimeBlocks((prev) => {
-        const otherTimeBlocks = prev.filter(
-          (block) => block.day.toDateString() !== day.toDateString(),
+  const handleTimeRangeChange = useCallback(
+    (day: Date, range: TimeRange | null) => {
+      setTimeRanges((prev) => {
+        const otherTimeRanges = prev.filter(
+          (r) => r.day.toDateString() !== day.toDateString(),
         );
-        return [...otherTimeBlocks, ...newBlocks];
+        if (range) {
+          return [...otherTimeRanges, range];
+        }
+        return otherTimeRanges;
       });
     },
     [],
   );
 
   /**
-   * Handles the form submission by invoking the server action.
+   * Handles the submission of availability.
    */
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
+    const payload = timeRanges.map((range) => ({
+      mentor_id: mentorId,
+      day: range.day?.toISOString().split("T")[0] ?? "",
+      start_time: `${range.day?.toISOString().split("T")[0]}T${range.startTime}:00.000Z`,
+      end_time: `${range.day?.toISOString().split("T")[0]}T${range.endTime}:00.000Z`,
+    }));
+
     try {
-      // Replace with actual mentor ID from session
-      const mentorId = "4be2f56c-f9e2-44ce-aa31-2a050adfed08";
-
-      // Prepare data for submission
-      const payload = timeBlocks.map((block) => ({
-        mentor_id: mentorId,
-        mentee_id: null,
-        scheduled_time: block.startTime,
-        meeting_url: "", // Initialize as empty or generate as needed
-        status: "scheduled",
-      }));
-
-      // Call the server action
-      await submitSchedule(payload);
-
+      await submitAvailability(payload);
       toast({
         title: "Success",
-        description: "Your schedule has been updated successfully.",
+        description: "Your availability has been updated.",
       });
-
-      // Reset selections
       setSelectedDays([]);
-      setTimeBlocks([]);
+      setTimeRanges([]);
     } catch (error: any) {
-      console.error("Error submitting schedule:", error);
+      console.error("Error submitting availability:", error);
       toast({
         title: "Error",
         description:
-          "There was an issue updating your schedule. Please try again.",
+          "There was an issue updating your availability. Please try again.",
         variant: "destructive",
       });
     }
-  };
+  }, [timeRanges, mentorId, toast]);
 
   return (
     <div>
@@ -102,16 +110,16 @@ export default function ScheduleForm() {
           <SelectValue placeholder="Select block length" />
         </SelectTrigger>
         <SelectContent>
+          <SelectItem value="15">15 Minutes</SelectItem>
           <SelectItem value="30">30 Minutes</SelectItem>
+          <SelectItem value="45">45 Minutes</SelectItem>
           <SelectItem value="60">1 Hour</SelectItem>
-          <SelectItem value="90">1.5 Hours</SelectItem>
-          <SelectItem value="120">2 Hours</SelectItem>
         </SelectContent>
       </Select>
 
       <div className="mt-4">
         <Calendar
-          mode="multiple" // Ensure mode is set to "multiple"
+          mode="multiple" // Allows multiple day selection
           selected={selectedDays}
           onSelect={handleDaySelect}
           className="rounded-md border p-2"
@@ -121,19 +129,18 @@ export default function ScheduleForm() {
       {selectedDays.length > 0 && (
         <div className="mt-6">
           {selectedDays.map((day) => (
-            <TimeBlockForm
+            <TimeRangeForm
               key={day.toDateString()}
               day={day}
-              blockLength={blockLength}
-              onChange={handleTimeBlockChange}
+              onChange={handleTimeRangeChange}
             />
           ))}
         </div>
       )}
 
-      {timeBlocks.length > 0 && (
+      {timeRanges.length > 0 && (
         <div className="mt-6">
-          <Button onClick={handleSubmit}>Submit Schedule</Button>
+          <Button onClick={handleSubmit}>Submit Availability</Button>
         </div>
       )}
     </div>

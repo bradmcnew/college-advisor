@@ -2,7 +2,6 @@ import { relations, sql } from "drizzle-orm";
 import {
   index,
   integer,
-  pgTableCreator,
   primaryKey,
   text,
   timestamp,
@@ -10,6 +9,9 @@ import {
   check,
   boolean,
   time,
+  uuid,
+  date,
+  pgTableCreator,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 import { timestamps } from "~/server/db/columns.helpers";
@@ -266,6 +268,35 @@ export const mentorReviews = createTable(
   }),
 );
 
+export const availability = createTable(
+  "availability",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    mentor_id: varchar("mentor_id", { length: 255 })
+      .notNull()
+      .references(() => users.id),
+    day: date("day").notNull(), // Date of Availability
+    start_time: timestamp("start_time", { withTimezone: true }).notNull(), // Start Time
+    end_time: timestamp("end_time", { withTimezone: true }).notNull(), // End Time
+    created_at: timestamp("created_at").notNull().defaultNow(),
+    updated_at: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    mentor_day_idx: index("mentor_day_idx").on(table.mentor_id, table.day),
+    time_range_check: check(
+      "time_range_check",
+      sql`${table.end_time} > ${table.start_time}`,
+    ), // Ensures End Time is After Start Time
+  }),
+);
+
+export const availabilityRelations = relations(availability, ({ one }) => ({
+  mentor: one(users, {
+    fields: [availability.mentor_id],
+    references: [users.id],
+  }),
+}));
+
 export const meetings = createTable(
   "meeting",
   {
@@ -274,11 +305,14 @@ export const meetings = createTable(
       .notNull()
       .references(() => users.id),
     mentee_id: varchar("mentee_id", { length: 255 }).references(() => users.id),
-    scheduled_time: timestamp("scheduled_time", {
+    start_time: timestamp("start_time", {
       withTimezone: true,
     }).notNull(),
+    end_time: timestamp("end_time", {
+      withTimezone: true,
+    }).notNull(), // End Time of the Meeting
     meeting_url: varchar("meeting_url", { length: 512 }).notNull(),
-    status: varchar("status", { length: 50 }).notNull().default("scheduled"), // Possible statuses: scheduled, completed, canceled
+    status: varchar("status", { length: 50 }).notNull().default("scheduled"), // Status: scheduled, completed, canceled
     created_at: timestamp("created_at").notNull().defaultNow(),
     updated_at: timestamp("updated_at").notNull().defaultNow(),
   },
@@ -287,7 +321,7 @@ export const meetings = createTable(
       table.mentor_id,
       table.mentee_id,
     ),
-    scheduled_time_idx: index("scheduled_time_idx").on(table.scheduled_time),
+    start_time_idx: index("start_time_idx").on(table.start_time),
     status_check: check(
       "status_check",
       sql`${table.status} IN ('scheduled', 'completed', 'canceled')`,

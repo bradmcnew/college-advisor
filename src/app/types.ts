@@ -19,3 +19,10 @@ export interface PostGridProps {
   majorId: number | null;
   graduationYear: number | null;
 }
+
+export interface Availability {
+  mentor_id: string;
+  day: string; // ISO date string (YYYY-MM-DD)
+  start_time: string; // ISO datetime string
+  end_time: string; // ISO datetime string
+}
