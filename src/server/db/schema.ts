@@ -9,6 +9,7 @@ import {
   varchar,
   check,
   boolean,
+  time,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 import { timestamps } from "~/server/db/columns.helpers";
@@ -264,3 +265,37 @@ export const mentorReviews = createTable(
     ),
   }),
 );
+
+export const meetings = createTable(
+  "meeting",
+  {
+    id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+    mentor_id: varchar("mentor_id", { length: 255 })
+      .notNull()
+      .references(() => users.id),
+    mentee_id: varchar("mentee_id", { length: 255 }).references(() => users.id),
+    scheduled_time: timestamp("scheduled_time", {
+      withTimezone: true,
+    }).notNull(),
+    meeting_url: varchar("meeting_url", { length: 512 }).notNull(),
+    status: varchar("status", { length: 50 }).notNull().default("scheduled"), // Possible statuses: scheduled, completed, canceled
+    created_at: timestamp("created_at").notNull().defaultNow(),
+    updated_at: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    mentor_mentee_idx: index("mentor_mentee_idx").on(
+      table.mentor_id,
+      table.mentee_id,
+    ),
+    scheduled_time_idx: index("scheduled_time_idx").on(table.scheduled_time),
+    status_check: check(
+      "status_check",
+      sql`${table.status} IN ('scheduled', 'completed', 'canceled')`,
+    ),
+  }),
+);
+
+export const meetingsRelations = relations(meetings, ({ one }) => ({
+  mentor: one(users, { fields: [meetings.mentor_id], references: [users.id] }),
+  mentee: one(users, { fields: [meetings.mentee_id], references: [users.id] }),
+}));
