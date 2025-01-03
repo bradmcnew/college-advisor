@@ -63,38 +63,41 @@ export async function submitAvailability(
     }
 
     const formattedPayload = payload.map((item) => {
-      const currentDate = new Date(); // Current date to use as the base
-      const startTimeParts = item.start_time.split(":");
-      const endTimeParts = item.end_time.split(":");
+      // Create a Date object for the specific day
+      const baseDate = new Date(item.day);
 
-      // Set the hours and minutes based on the provided "HH:MM" format
+      // Parse the time strings
+      const [startHour, startMinute] = item.start_time.split(":").map(Number);
+      const [endHour, endMinute] = item.end_time.split(":").map(Number);
+
+      // Create UTC dates for start and end times
       const start_time = new Date(
-        currentDate.setHours(
-          Number(startTimeParts[0]),
-          Number(startTimeParts[1]),
-          0,
-          0,
-        ),
-      );
-      const end_time = new Date(
-        currentDate.setHours(
-          Number(endTimeParts[0]),
-          Number(endTimeParts[1]),
-          0,
+        Date.UTC(
+          baseDate.getFullYear(),
+          baseDate.getMonth(),
+          baseDate.getDate(),
+          startHour,
+          startMinute,
           0,
         ),
       );
 
-      // Log the UTC Availability for debugging
-      console.log(
-        `Storing UTC Availability: Day - ${item.day}, Start - ${start_time.toISOString()}, End - ${end_time.toISOString()}`,
+      const end_time = new Date(
+        Date.UTC(
+          baseDate.getFullYear(),
+          baseDate.getMonth(),
+          baseDate.getDate(),
+          endHour,
+          endMinute,
+          0,
+        ),
       );
 
       return {
         mentor_id: mentorId,
         day: item.day,
-        start_time, // Date object
-        end_time, // Date object
+        start_time,
+        end_time,
       };
     });
 
@@ -117,30 +120,11 @@ export async function getAvailability(mentorId: string) {
       .from(availability)
       .where(eq(availability.mentor_id, mentorId));
 
-    return availabilities.map((avail) => {
-      // Convert UTC dates to local time
-      const startLocal = new Date(avail.start_time);
-      const endLocal = new Date(avail.end_time);
-
-      // Format times in local "HH:MM" format
-      const startTimeLocal = startLocal.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
-
-      const endTimeLocal = endLocal.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
-
-      return {
-        day: avail.day,
-        startTime: startTimeLocal,
-        endTime: endTimeLocal,
-      };
-    });
+    return availabilities.map((avail) => ({
+      day: avail.day,
+      startTime: avail.start_time.toISOString(),
+      endTime: avail.end_time.toISOString(),
+    }));
   } catch (error) {
     console.error("Failed to fetch availability:", error);
     throw new Error("Failed to fetch availability.");
