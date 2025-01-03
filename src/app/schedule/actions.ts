@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { db } from "~/server/db";
 import { meetings, availability } from "~/server/db/schema";
 
@@ -48,14 +48,29 @@ export async function submitAvailability(
   }[],
 ) {
   try {
-    const formattedPayload = payload.map((item) => ({
-      mentor_id: item.mentor_id,
-      day: item.day,
-      start_time: new Date(item.start_time),
-      end_time: new Date(item.end_time),
-    }));
+    // Batch insert all availabilities in a single transaction
+    await db.transaction(async (tx) => {
+      // Delete existing availabilities for these days to prevent duplicates
+      await tx.delete(availability).where(
+        and(
+          eq(availability.mentor_id, payload[0]?.mentor_id ?? ""),
+          inArray(
+            availability.day,
+            payload.map((item) => item.day),
+          ),
+        ),
+      );
 
-    await db.insert(availability).values(formattedPayload);
+      // Insert new availabilities
+      await tx.insert(availability).values(
+        payload.map((item) => ({
+          mentor_id: item.mentor_id,
+          day: item.day,
+          start_time: new Date(item.start_time),
+          end_time: new Date(item.end_time),
+        })),
+      );
+    });
   } catch (error) {
     console.error("Failed to submit availability:", error);
     throw new Error("Failed to submit availability.");

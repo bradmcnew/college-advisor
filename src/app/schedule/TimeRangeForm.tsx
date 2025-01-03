@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
 
@@ -8,6 +8,7 @@ interface TimeRange {
   day: Date;
   startTime: string; // HH:MM format
   endTime: string; // HH:MM format
+  isValid: boolean;
 }
 
 interface TimeRangeFormProps {
@@ -15,22 +16,15 @@ interface TimeRangeFormProps {
   onChange: (day: Date, range: TimeRange | null) => void;
 }
 
-/**
- * Component for selecting a time range on a specific day.
- */
 export default function TimeRangeForm({ day, onChange }: TimeRangeFormProps) {
   const [startTime, setStartTime] = useState<string>("");
   const [endTime, setEndTime] = useState<string>("");
   const [error, setError] = useState<string>("");
 
-  /**
-   * Validates and updates the time range.
-   */
-  const handleSave = useCallback(() => {
-    setError("");
-
+  const validateTimeRange = useCallback(() => {
     if (!startTime || !endTime) {
-      setError("Both start and end times are required.");
+      setError("");
+      onChange(day, null);
       return;
     }
 
@@ -39,10 +33,10 @@ export default function TimeRangeForm({ day, onChange }: TimeRangeFormProps) {
 
     if (end <= start) {
       setError("End time must be after start time.");
+      onChange(day, null);
       return;
     }
 
-    // Define allowed time range: 7:00 AM to 11:30 PM
     const earliest = new Date(day);
     earliest.setHours(7, 0, 0, 0);
     const latest = new Date(day);
@@ -50,11 +44,17 @@ export default function TimeRangeForm({ day, onChange }: TimeRangeFormProps) {
 
     if (start < earliest || end > latest) {
       setError("Time range must be between 7:00 AM and 11:30 PM.");
+      onChange(day, null);
       return;
     }
 
-    onChange(day, { day, startTime, endTime });
+    setError("");
+    onChange(day, { day, startTime, endTime, isValid: true });
   }, [day, startTime, endTime, onChange]);
+
+  useEffect(() => {
+    validateTimeRange();
+  }, [startTime, endTime, validateTimeRange]);
 
   const handleReset = useCallback(() => {
     setStartTime("");
@@ -99,18 +99,13 @@ export default function TimeRangeForm({ day, onChange }: TimeRangeFormProps) {
             max="23:45"
           />
         </div>
+
+        <Button onClick={handleReset} variant="outline" size="sm">
+          Clear
+        </Button>
       </div>
 
       {error && <p className="mt-2 text-red-500">{error}</p>}
-
-      <div className="mt-4 flex space-x-2">
-        <Button onClick={handleSave} variant="default">
-          Save
-        </Button>
-        <Button onClick={handleReset} variant="outline" color="destructive">
-          Reset
-        </Button>
-      </div>
     </div>
   );
 }

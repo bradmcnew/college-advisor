@@ -22,6 +22,7 @@ interface TimeRange {
   day: Date;
   startTime: string; // ISO string
   endTime: string; // ISO string
+  isValid: boolean; // Add this field
 }
 
 interface ScheduleFormProps {
@@ -33,6 +34,15 @@ export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
   const [selectedDays, setSelectedDays] = useState<Date[]>([]);
   const [timeRanges, setTimeRanges] = useState<TimeRange[]>([]);
   const [blockLength, setBlockLength] = useState<number>(15); // Default to 15 minutes
+
+  const disabledDays = {
+    before: new Date(),
+    after: (() => {
+      const maxDate = new Date();
+      maxDate.setDate(maxDate.getDate() + 7);
+      return maxDate;
+    })(),
+  };
 
   /**
    * Handles the selection and deselection of days.
@@ -73,7 +83,18 @@ export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
    * Handles the submission of availability.
    */
   const handleSubmit = useCallback(async () => {
-    const payload = timeRanges.map((range) => ({
+    const validTimeRanges = timeRanges.filter((range) => range.isValid);
+
+    if (validTimeRanges.length === 0) {
+      toast({
+        title: "Error",
+        description: "Please set valid time ranges for at least one day.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const payload = validTimeRanges.map((range) => ({
       mentor_id: mentorId,
       day: range.day?.toISOString().split("T")[0] ?? "",
       start_time: `${range.day?.toISOString().split("T")[0]}T${range.startTime}:00.000Z`,
@@ -101,13 +122,13 @@ export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
 
   return (
     <div>
-      <Label className="mb-2">Select Block Length</Label>
+      <Label className="mb-2">Select Meeting Length</Label>
       <Select
         value={blockLength.toString()}
         onValueChange={(value) => setBlockLength(parseInt(value))}
       >
         <SelectTrigger>
-          <SelectValue placeholder="Select block length" />
+          <SelectValue placeholder="Select Meeting Length" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="15">15 Minutes</SelectItem>
@@ -119,9 +140,10 @@ export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
 
       <div className="mt-4">
         <Calendar
-          mode="multiple" // Allows multiple day selection
+          mode="multiple"
           selected={selectedDays}
           onSelect={handleDaySelect}
+          disabled={disabledDays}
           className="rounded-md border p-2"
         />
       </div>
@@ -138,10 +160,14 @@ export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
         </div>
       )}
 
-      {timeRanges.length > 0 && (
-        <div className="mt-6">
-          <Button onClick={handleSubmit}>Submit Availability</Button>
-        </div>
+      {selectedDays.length > 0 && (
+        <Button
+          onClick={handleSubmit}
+          className="mt-6"
+          disabled={!timeRanges.some((range) => range.isValid)}
+        >
+          Submit Availability
+        </Button>
       )}
     </div>
   );
