@@ -272,27 +272,27 @@ export const availability = createTable(
   "availability",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    mentor_id: varchar("mentor_id", { length: 255 })
+    mentorId: varchar("mentor_id", { length: 255 })
       .notNull()
       .references(() => users.id),
     day: date("day").notNull(), // Date of Availability
-    start_time: timestamp("start_time", { withTimezone: true }).notNull(), // Start Time
-    end_time: timestamp("end_time", { withTimezone: true }).notNull(), // End Time
+    startTime: timestamp("start_time", { withTimezone: true }).notNull(), // Start Time
+    endTime: timestamp("end_time", { withTimezone: true }).notNull(), // End Time
     created_at: timestamp("created_at").notNull().defaultNow(),
     updated_at: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => ({
-    mentor_day_idx: index("mentor_day_idx").on(table.mentor_id, table.day),
-    time_range_check: check(
+    mentorDayIdx: index("mentor_day_idx").on(table.mentorId, table.day),
+    timeRangeCheck: check(
       "time_range_check",
-      sql`${table.end_time} > ${table.start_time}`,
+      sql`${table.endTime} > ${table.startTime}`,
     ), // Ensures End Time is After Start Time
   }),
 );
 
 export const availabilityRelations = relations(availability, ({ one }) => ({
   mentor: one(users, {
-    fields: [availability.mentor_id],
+    fields: [availability.mentorId],
     references: [users.id],
   }),
 }));
@@ -301,24 +301,24 @@ export const meetings = createTable(
   "meeting",
   {
     id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-    mentor_id: varchar("mentor_id", { length: 255 })
+    mentorId: varchar("mentor_id", { length: 255 })
       .notNull()
       .references(() => users.id),
-    mentee_id: varchar("mentee_id", { length: 255 }).references(() => users.id),
-    start_time: timestamp("start_time").notNull(),
-    end_time: timestamp("end_time").notNull(), // End Time of the Meeting
+    menteeId: varchar("mentee_id", { length: 255 }).references(() => users.id),
+    startTime: timestamp("start_time").notNull(),
+    endTime: timestamp("end_time").notNull(), // End Time of the Meeting
     meeting_url: varchar("meeting_url", { length: 512 }).notNull(),
     status: varchar("status", { length: 50 }).notNull().default("scheduled"), // Status: scheduled, completed, canceled
     created_at: timestamp("created_at").notNull().defaultNow(),
     updated_at: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => ({
-    mentor_mentee_idx: index("mentor_mentee_idx").on(
-      table.mentor_id,
-      table.mentee_id,
+    mentorMenteeIdx: index("mentor_mentee_idx").on(
+      table.mentorId,
+      table.menteeId,
     ),
-    start_time_idx: index("start_time_idx").on(table.start_time),
-    status_check: check(
+    startTimeIdx: index("start_time_idx").on(table.startTime),
+    statusCheck: check(
       "status_check",
       sql`${table.status} IN ('scheduled', 'completed', 'canceled')`,
     ),
@@ -326,6 +326,6 @@ export const meetings = createTable(
 );
 
 export const meetingsRelations = relations(meetings, ({ one }) => ({
-  mentor: one(users, { fields: [meetings.mentor_id], references: [users.id] }),
-  mentee: one(users, { fields: [meetings.mentee_id], references: [users.id] }),
+  mentor: one(users, { fields: [meetings.mentorId], references: [users.id] }),
+  mentee: one(users, { fields: [meetings.menteeId], references: [users.id] }),
 }));

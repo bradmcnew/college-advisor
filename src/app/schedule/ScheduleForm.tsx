@@ -1,22 +1,17 @@
 "use client";
 import { useState, useCallback, useEffect } from "react";
 import { Button } from "~/components/ui/button";
-import { Label } from "~/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
 import { useToast } from "~/hooks/use-toast";
-import { submitAvailability, getAvailability } from "~/app/schedule/actions";
+import {
+  submitAvailability,
+  getAvailabilityAction,
+} from "~/app/schedule/actions";
 import WeeklyCalendar from "~/app/schedule/WeeklyCalendar";
 
 interface TimeRange {
   day: Date;
-  start_time: string; // "HH:MM"
-  end_time: string; // "HH:MM"
+  startTime: string; // "HH:MM"
+  endTime: string; // "HH:MM"
 }
 
 interface ScheduleFormProps {
@@ -26,7 +21,6 @@ interface ScheduleFormProps {
 export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
   const { toast } = useToast();
   const [selectedRanges, setSelectedRanges] = useState<TimeRange[]>([]);
-  const [blockLength, setBlockLength] = useState<number>(15);
   const [isLoading, setIsLoading] = useState(true);
 
   // Helper function to convert UTC date to local date while preserving the date
@@ -55,7 +49,7 @@ export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
   useEffect(() => {
     const fetchAvailability = async () => {
       try {
-        const availabilities = await getAvailability(mentorId);
+        const availabilities = await getAvailabilityAction(mentorId);
         const ranges = availabilities.map((avail) => {
           const startHours = avail.startTime.slice(11, 13);
           const startMinutes = avail.startTime.slice(14, 16);
@@ -64,8 +58,8 @@ export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
 
           return {
             day: utcToLocalDate(avail.day),
-            start_time: `${startHours}:${startMinutes}`,
-            end_time: `${endHours}:${endMinutes}`,
+            startTime: `${startHours}:${startMinutes}`,
+            endTime: `${endHours}:${endMinutes}`,
           };
         });
         console.log("Fetched ranges:", ranges);
@@ -95,8 +89,8 @@ export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
 
     const payload = selectedRanges.map((range) => ({
       day: localToUTCDate(range.day),
-      start_time: range.start_time,
-      end_time: range.end_time,
+      startTime: range.startTime,
+      endTime: range.endTime,
     }));
 
     try {

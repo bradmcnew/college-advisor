@@ -13,7 +13,7 @@ import {
   meetings,
 } from "~/server/db/schema"; // Adjust this import path to where your schema is defined
 import { eq, and, desc } from "drizzle-orm";
-import { UserProfile } from "~/app/types";
+import { DayAvailability, UserProfile } from "~/app/types";
 export async function getPosts(limit = 20, offset = 0) {
   const user = await auth();
   if (!user?.userId) throw new Error("Unauthorized");
@@ -268,30 +268,71 @@ export const getProfileWithImage = async () => {
   return profile;
 };
 
-export const updateProfileWithImage = async (profile: UserProfile) => {
+export const updateProfileWithImage = async ({
+  bio,
+  schoolYear,
+  graduationYear,
+  image,
+}: {
+  bio: string;
+  schoolYear: string;
+  graduationYear: number;
+  image: string | null;
+}) => {
   const user = await auth();
   if (!user?.userId) throw new Error("Unauthorized");
 
   await db
     .update(userProfiles)
     .set({
-      bio: profile.bio,
-      schoolYear: profile.schoolYear as
+      bio: bio,
+      schoolYear: schoolYear as
         | "Freshman"
         | "Sophomore"
         | "Junior"
         | "Senior"
         | "Graduate",
-      graduationYear: profile.graduationYear,
+      graduationYear: graduationYear,
     })
     .where(eq(userProfiles.userId, user.userId));
 
-  if (profile.image) {
+  if (image) {
     await db
       .update(users)
       .set({
-        image: profile.image,
+        image: image,
       })
       .where(eq(users.id, user.userId));
   }
+};
+
+/**
+ * Sets the availability for a mentor.
+ * @param payload Array of availability objects to be inserted.
+ */
+export const setAvailability = async (payload: DayAvailability[]) => {
+  const user = await auth();
+  if (!user?.userId) throw new Error("Unauthorized");
+
+  await db.insert(availability).values(payload);
+};
+
+/**
+ * Deletes the availability for a mentor.
+ * @param mentorId The ID of the mentor.
+ */
+export const deleteAvailability = async (mentorId: string) => {
+  const user = await auth();
+  if (!user?.userId) throw new Error("Unauthorized");
+
+  await db.delete(availability).where(eq(availability.mentorId, mentorId));
+};
+
+export const getAvailability = async (mentorId: string) => {
+  const availabilities = await db
+    .select()
+    .from(availability)
+    .where(eq(availability.mentorId, mentorId));
+
+  return availabilities;
 };

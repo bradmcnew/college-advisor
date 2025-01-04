@@ -86,12 +86,7 @@ export default async function EditProfilePage({
       // Update the userProfiles table with the additional information
       await updateProfileWithImage({
         bio,
-        schoolYear: schoolYear as
-          | "Freshman"
-          | "Sophomore"
-          | "Junior"
-          | "Senior"
-          | "Graduate",
+        schoolYear,
         graduationYear,
         image: profileImageUrl ?? null,
       });

@@ -6,19 +6,8 @@ import { Button } from "~/components/ui/button";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
-
-interface UserProfile {
-  userId: string;
-  bio: string;
-  schoolYear: "Freshman" | "Sophomore" | "Junior" | "Senior" | "Graduate";
-  graduationYear: number;
-  eduEmail: string;
-  isMentor: boolean;
-  isEduVerified: boolean;
-  user: {
-    image: string | null;
-  };
-}
+import { UserProfile } from "~/app/types";
+import { getProfileWithImage } from "~/server/queries";
 
 export default async function ViewProfilePage() {
   const session = await auth();
@@ -28,25 +17,7 @@ export default async function ViewProfilePage() {
   }
 
   try {
-    const userProfile = (await db.query.userProfiles.findFirst({
-      where: (table, { eq }) => eq(table.userId, session.userId),
-      columns: {
-        userId: true,
-        bio: true,
-        schoolYear: true,
-        graduationYear: true,
-        eduEmail: true,
-        isMentor: true,
-        isEduVerified: true,
-      },
-      with: {
-        user: {
-          columns: {
-            image: true,
-          },
-        },
-      },
-    })) as (UserProfile & { user: { image: string | null } }) | null;
+    const userProfile = await getProfileWithImage();
 
     if (!userProfile?.isMentor || !userProfile.isEduVerified) {
       redirect("/email-verification");

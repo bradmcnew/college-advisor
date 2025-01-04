@@ -20,16 +20,23 @@ export interface PostGridProps {
   graduationYear: number | null;
 }
 
-export interface Availability {
-  mentor_id: string;
-  day: string; // ISO date string (YYYY-MM-DD)
-  start_time: string; // ISO datetime string
-  end_time: string; // ISO datetime string
-}
-
 export interface UserProfile {
   bio: string;
   schoolYear: "Freshman" | "Sophomore" | "Junior" | "Senior" | "Graduate";
   graduationYear: number;
   image: string | null;
+  userId: string;
+  eduEmail: string;
+  isMentor: boolean;
+  isEduVerified: boolean;
+  user: {
+    image: string | null;
+  };
+}
+
+export interface DayAvailability {
+  mentorId: string;
+  day: string;
+  startTime: Date;
+  endTime: Date;
 }
