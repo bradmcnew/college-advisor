@@ -14,6 +14,8 @@ import {
 } from "~/server/db/schema"; // Adjust this import path to where your schema is defined
 import { eq, and, desc } from "drizzle-orm";
 import { DayAvailability, UserProfile } from "~/app/types";
+import { UTApi } from "uploadthing/server";
+
 export async function getPosts(limit = 20, offset = 0) {
   const user = await auth();
   if (!user?.userId) throw new Error("Unauthorized");
@@ -268,6 +270,17 @@ export const getProfileWithImage = async () => {
   return profile;
 };
 
+export const deleteUTImage = async (image: string) => {
+  const user = await auth();
+  if (!user?.userId) throw new Error("Unauthorized");
+
+  const utapi = new UTApi();
+  const fileKey = image.split("https://utfs.io/f/")[1];
+  if (fileKey) {
+    await utapi.deleteFiles(fileKey);
+  }
+};
+
 export const updateProfileWithImage = async ({
   bio,
   schoolYear,
@@ -297,6 +310,15 @@ export const updateProfileWithImage = async ({
     .where(eq(userProfiles.userId, user.userId));
 
   if (image) {
+    const oldImage = await db.query.users.findFirst({
+      where: (model, { eq }) => eq(model.id, user.userId),
+    });
+    // delete old image from uploadthing
+    if (oldImage?.image) {
+      await deleteUTImage(oldImage.image);
+    }
+
+    // update user image
     await db
       .update(users)
       .set({
