@@ -11,7 +11,7 @@ import {
 } from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import ImageUploader from "~/app/profile/edit/ImageUploader";
+import ImageUploader from "~/app/(default)/profile/edit/ImageUploader";
 import StatusToast from "~/app/components/StatusToast";
 import { getProfileWithImage, updateProfileWithImage } from "~/server/queries";
 

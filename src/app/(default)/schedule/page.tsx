@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import ScheduleForm from "~/app/schedule/ScheduleForm";
+import ScheduleForm from "~/app/(default)/schedule/ScheduleForm";
 import { auth } from "~/server/auth";
 import LoadingSpinner from "~/app/components/LoadingSpinner";
 

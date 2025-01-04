@@ -1,10 +1,10 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
-import { PostCard } from "~/app/(dashboard)/PostCard";
+import { PostCard } from "~/app/(default)/(dashboard)/PostCard";
 import {
   fetchPostsAction,
   fetchPostsByFilterAction,
-} from "~/app/(dashboard)/actions";
+} from "~/app/(default)/(dashboard)/actions";
 import type { Card } from "~/app/types";
 import { Skeleton } from "~/components/ui/skeleton";
 

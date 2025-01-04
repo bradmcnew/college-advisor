@@ -1,6 +1,6 @@
 import { getPostById } from "~/server/queries";
 import Image from "next/image";
-import { Modal } from "~/app/@modal/(.)img/[id]/modal";
+import { Modal } from "~/app/(default)/@modal/(.)img/[id]/modal";
 import Link from "next/link";
 
 export default async function PostModal({

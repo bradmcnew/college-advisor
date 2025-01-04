@@ -9,7 +9,7 @@ import {
   getAvailability,
   setAvailability,
 } from "~/server/queries";
-import { DayAvailability } from "../types";
+import { DayAvailability } from "~/app/types";
 
 /**
  * Handles the availability submission by inserting the selected time ranges into the database.

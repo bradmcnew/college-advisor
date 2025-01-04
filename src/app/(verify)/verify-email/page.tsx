@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import jwt from "jsonwebtoken";
 import { db } from "~/server/db";
 import { env } from "~/env";
+import VerificationResult from "~/app/(verify)/verify-email/VerificationResult";
 import { userProfiles } from "~/server/db/schema";
 
 interface VerificationPageProps {
@@ -11,10 +12,12 @@ interface VerificationPageProps {
 export default async function VerificationPage({
   searchParams,
 }: VerificationPageProps) {
-  const { token } = await searchParams;
+  const { token } = searchParams;
 
   if (!token) {
-    redirect("/email-verification?status=invalid-token");
+    return (
+      <VerificationResult success={false} message="Invalid or missing token." />
+    );
   }
 
   try {
@@ -26,7 +29,7 @@ export default async function VerificationPage({
 
     const { userId, eduEmail } = decoded;
 
-    // Use a single upsert operation instead of separate query and update/insert
+    // Upsert the user profile
     await db
       .insert(userProfiles)
       .values({
@@ -47,16 +50,20 @@ export default async function VerificationPage({
         },
       });
 
-    // Redirect mentors to the onboarding page after successful verification
-    redirect("/mentor-onboarding");
+    // Pass success to the client component
+    return (
+      <VerificationResult
+        success={true}
+        message="Email verified successfully!"
+      />
+    );
   } catch (error: any) {
-    // If the error is a NEXT_REDIRECT, rethrow it to allow Next.js to handle the redirect
-    if (error.digest && error.digest.startsWith("NEXT_REDIRECT")) {
-      throw error;
-    }
-
-    console.error("Error verifying mentor email:", error);
-    // Redirect to failure page
-    redirect("/email-verification?status=failed");
+    console.error("Error verifying email:", error);
+    return (
+      <VerificationResult
+        success={false}
+        message="Verification failed. Please try again."
+      />
+    );
   }
 }

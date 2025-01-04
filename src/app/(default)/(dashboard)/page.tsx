@@ -2,7 +2,7 @@ import { auth } from "~/server/auth";
 import { LoginPage } from "~/app/components/Login";
 import { getMajors, getSchools } from "~/server/queries";
 import { FilterButton } from "~/app/components/FilterButton";
-import { PostGrid } from "~/app/(dashboard)/PostGrid";
+import { PostGrid } from "~/app/(default)/(dashboard)/PostGrid";
 import { Filter } from "lucide-react";
 import {
   Popover,
@@ -13,7 +13,7 @@ import { Button } from "~/components/ui/button";
 import {
   fetchPostsAction,
   fetchPostsByFilterAction,
-} from "~/app/(dashboard)/actions";
+} from "~/app/(default)/(dashboard)/actions";
 
 export default async function HomePage({
   searchParams,

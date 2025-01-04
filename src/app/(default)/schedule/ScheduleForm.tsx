@@ -5,8 +5,8 @@ import { useToast } from "~/hooks/use-toast";
 import {
   submitAvailability,
   getAvailabilityAction,
-} from "~/app/schedule/actions";
-import WeeklyCalendar from "~/app/schedule/WeeklyCalendar";
+} from "~/app/(default)/schedule/actions";
+import WeeklyCalendar from "~/app/(default)/schedule/WeeklyCalendar";
 
 interface TimeRange {
   day: Date;
