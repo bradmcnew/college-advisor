@@ -16,7 +16,7 @@ export default async function SchedulePage() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="mb-4 text-2xl font-bold">Set Your Availability</h1>
+      <h1 className="mb-4 pt-16 text-2xl font-bold">Set Your Availability</h1>
       <Suspense fallback={<Loading />}>
         <ScheduleForm mentorId={user.userId} />
       </Suspense>

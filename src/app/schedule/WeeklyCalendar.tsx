@@ -263,18 +263,17 @@ export default function WeeklyCalendar({
   };
 
   /**
-   * Generates an array of the next 6 days starting from tomorrow.
-   * @returns An array of Date objects representing the next 6 days.
+   * Generates an array of the next 7 days starting from today.
+   * @returns An array of Date objects representing the next 7 days.
    */
   const getWeekDays = () => {
     const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
+    const weekStart = new Date(today);
+    weekStart.setHours(0, 0, 0, 0);
 
-    return Array.from({ length: 6 }, (_, i) => {
-      const day = new Date(tomorrow);
-      day.setDate(tomorrow.getDate() + i);
+    return Array.from({ length: 7 }, (_, i) => {
+      const day = new Date(weekStart);
+      day.setDate(weekStart.getDate() + i);
       return day;
     });
   };
@@ -320,7 +319,7 @@ export default function WeeklyCalendar({
     <div>
       <Label className="mb-2">Select Your Availability</Label>
       <div ref={calendarRef} className="relative overflow-auto">
-        <div className="grid grid-cols-7 divide-x divide-gray-200 border border-gray-300">
+        <div className="grid grid-cols-8 divide-x divide-gray-200 border border-gray-300">
           {/* Header Row */}
           <div className="select-none border-b border-gray-300 p-2 font-semibold">
             Time
@@ -362,7 +361,7 @@ export default function WeeklyCalendar({
                           cellRefs.current[key] = el;
                         }
                       }}
-                      className={`flex h-10 cursor-pointer items-center justify-center border-t border-gray-200 ${
+                      className={`flex h-8 cursor-pointer items-center justify-center border-t border-gray-200 ${
                         isCellCurrentlySelecting(day, hour)
                           ? "bg-blue-300"
                           : isCellSelected(day, hour)

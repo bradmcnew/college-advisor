@@ -122,21 +122,6 @@ export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
 
   return (
     <div>
-      <Label className="mb-2">Select Meeting Length</Label>
-      <Select
-        value={blockLength.toString()}
-        onValueChange={(value) => setBlockLength(parseInt(value))}
-      >
-        <SelectTrigger>
-          <SelectValue placeholder="Select Meeting Length" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="15">15 Minutes</SelectItem>
-          <SelectItem value="30">30 Minutes</SelectItem>
-          <SelectItem value="45">45 Minutes</SelectItem>
-          <SelectItem value="60">1 Hour</SelectItem>
-        </SelectContent>
-      </Select>
       <div className="mt-4">
         <WeeklyCalendar
           selectedRanges={selectedRanges}
