@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, Fragment } from "react";
 import { Label } from "~/components/ui/label";
+import { Tooltip } from "~/components/ui/tooltip";
 
 /**
  * Interface representing a selected time range.
@@ -128,6 +129,11 @@ export default function WeeklyCalendar({
     null,
   );
   const calendarRef = useRef<HTMLDivElement>(null);
+  const cellRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [tooltipPosition, setTooltipPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
 
   /**
    * Handles the initiation of a drag action.
@@ -274,17 +280,55 @@ export default function WeeklyCalendar({
 
   const weekDays = getWeekDays();
 
+  /**
+   * Formats the selected range for display.
+   * @returns A formatted string representing the selected time range or null.
+   */
+  const getSelectedRangeDisplay = (): string | null => {
+    if (isDragging && dragStart && dragEnd) {
+      const startHour = Math.min(dragStart.hour, dragEnd.hour);
+      const endHour = Math.max(dragStart.hour, dragEnd.hour) + 1;
+
+      return `${formatHour(startHour)} - ${formatHour(endHour)}`;
+    }
+    return null;
+  };
+
+  const selectedRangeDisplay = getSelectedRangeDisplay();
+
+  /**
+   * Updates the tooltip position based on the drag end cell.
+   */
+  useEffect(() => {
+    if (dragEnd && calendarRef.current) {
+      const key = `${dragEnd.day.toDateString()}-${dragEnd.hour}`;
+      const cell = cellRefs.current[key];
+      if (cell) {
+        const rect = cell.getBoundingClientRect();
+        const calendarRect = calendarRef.current.getBoundingClientRect();
+        setTooltipPosition({
+          top: rect.top - calendarRect.top - 40, // Adjust as needed
+          left: rect.left - calendarRect.left + rect.width / 2,
+        });
+      }
+    } else {
+      setTooltipPosition(null);
+    }
+  }, [dragEnd]);
+
   return (
     <div>
       <Label className="mb-2">Select Your Availability</Label>
-      <div ref={calendarRef} className="overflow-auto">
+      <div ref={calendarRef} className="relative overflow-auto">
         <div className="grid grid-cols-8 border border-gray-300">
           {/* Header Row */}
-          <div className="border-b border-gray-300 p-2 font-semibold">Time</div>
+          <div className="select-none border-b border-gray-300 p-2 font-semibold">
+            Time
+          </div>
           {weekDays.map((day) => (
             <div
               key={day.toDateString()}
-              className="border-b border-gray-300 p-2 font-semibold"
+              className="select-none border-b border-gray-300 p-2 font-semibold"
             >
               {day.toLocaleDateString(undefined, {
                 weekday: "short",
@@ -298,32 +342,70 @@ export default function WeeklyCalendar({
           {HOURS.map((hour) => (
             <Fragment key={hour}>
               {/* Time Label */}
-              <div className="border-t border-gray-200 p-1">
+              <div className="select-none border-t border-gray-200 p-1">
                 {formatHour(hour)}
               </div>
               {/* Time Slot Cells */}
-              {weekDays.map((day) => (
-                <div
-                  key={`${day.toDateString()}-${hour}`}
-                  className="border-t border-gray-200"
-                  aria-label={`Select time from ${formatHour(hour)} to ${formatHour(hour + 1)} on ${day.toLocaleDateString()}`}
-                >
+              {weekDays.map((day) => {
+                const key = `${day.toDateString()}-${hour}`;
+                const isDragEndCell =
+                  isDragging &&
+                  dragEnd &&
+                  day.toDateString() === dragEnd.day.toDateString() &&
+                  hour === dragEnd.hour;
+
+                return (
                   <div
-                    className={`flex h-10 cursor-pointer items-center justify-center border-t border-gray-200 ${
-                      isCellCurrentlySelecting(day, hour)
-                        ? "bg-blue-300"
-                        : isCellSelected(day, hour)
-                          ? "bg-blue-200"
-                          : "bg-white"
-                    }`}
-                    onMouseDown={() => handleMouseDown(day, hour)}
-                    onMouseEnter={() => handleMouseEnter(day, hour)}
-                  ></div>
-                </div>
-              ))}
+                    key={key}
+                    className="relative border-t border-gray-200"
+                    aria-label={`Select time from ${formatHour(hour)} to ${formatHour(hour + 1)} on ${day.toLocaleDateString()}`}
+                  >
+                    <div
+                      ref={(el: HTMLDivElement | null): void => {
+                        if (el) {
+                          cellRefs.current[key] = el;
+                        }
+                      }}
+                      className={`flex h-10 cursor-pointer items-center justify-center border-t border-gray-200 ${
+                        isCellCurrentlySelecting(day, hour)
+                          ? "bg-blue-300"
+                          : isCellSelected(day, hour)
+                            ? "bg-blue-200"
+                            : "bg-white"
+                      }`}
+                      onMouseDown={() => handleMouseDown(day, hour)}
+                      onMouseEnter={() => handleMouseEnter(day, hour)}
+                    ></div>
+                    {isDragEndCell && tooltipPosition && (
+                      <div
+                        className="absolute left-0 top-0 -translate-y-full transform rounded bg-gray-800 px-2 py-1 text-sm text-white"
+                        style={{
+                          top: tooltipPosition.top,
+                          left: tooltipPosition.left,
+                        }}
+                      >
+                        {selectedRangeDisplay}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </Fragment>
           ))}
         </div>
+        {/* Tooltip Overlay */}
+        {tooltipPosition && (
+          <div
+            className="pointer-events-none absolute rounded bg-gray-800 px-2 py-1 text-sm text-white"
+            style={{
+              top: tooltipPosition.top,
+              left: tooltipPosition.left,
+              transform: "translate(-50%, -100%)",
+            }}
+          >
+            {selectedRangeDisplay}
+          </div>
+        )}
       </div>
     </div>
   );
