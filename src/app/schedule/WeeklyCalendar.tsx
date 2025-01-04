@@ -305,10 +305,9 @@ export default function WeeklyCalendar({
       const cell = cellRefs.current[key];
       if (cell) {
         const rect = cell.getBoundingClientRect();
-        const calendarRect = calendarRef.current.getBoundingClientRect();
         setTooltipPosition({
-          top: rect.top - calendarRect.top - 40, // Adjust as needed
-          left: rect.left - calendarRect.left + rect.width / 2,
+          top: rect.top,
+          left: rect.left + rect.width / 2,
         });
       }
     } else {
@@ -348,17 +347,13 @@ export default function WeeklyCalendar({
               {/* Time Slot Cells */}
               {weekDays.map((day) => {
                 const key = `${day.toDateString()}-${hour}`;
-                const isDragEndCell =
-                  isDragging &&
-                  dragEnd &&
-                  day.toDateString() === dragEnd.day.toDateString() &&
-                  hour === dragEnd.hour;
-
                 return (
                   <div
                     key={key}
                     className="relative border-t border-gray-200"
-                    aria-label={`Select time from ${formatHour(hour)} to ${formatHour(hour + 1)} on ${day.toLocaleDateString()}`}
+                    aria-label={`Select time from ${formatHour(hour)} to ${formatHour(
+                      hour + 1,
+                    )} on ${day.toLocaleDateString()}`}
                   >
                     <div
                       ref={(el: HTMLDivElement | null): void => {
@@ -376,31 +371,21 @@ export default function WeeklyCalendar({
                       onMouseDown={() => handleMouseDown(day, hour)}
                       onMouseEnter={() => handleMouseEnter(day, hour)}
                     ></div>
-                    {isDragEndCell && tooltipPosition && (
-                      <div
-                        className="absolute left-0 top-0 -translate-y-full transform rounded bg-gray-800 px-2 py-1 text-sm text-white"
-                        style={{
-                          top: tooltipPosition.top,
-                          left: tooltipPosition.left,
-                        }}
-                      >
-                        {selectedRangeDisplay}
-                      </div>
-                    )}
                   </div>
                 );
               })}
             </Fragment>
           ))}
         </div>
-        {/* Tooltip Overlay */}
-        {tooltipPosition && (
+        {/* Single Tooltip Overlay */}
+        {isDragging && tooltipPosition && (
           <div
-            className="pointer-events-none absolute rounded bg-gray-800 px-2 py-1 text-sm text-white"
+            className="pointer-events-none fixed rounded bg-gray-800 px-2 py-1 text-sm text-white shadow-lg"
             style={{
-              top: tooltipPosition.top,
-              left: tooltipPosition.left,
+              top: `${tooltipPosition.top}px`,
+              left: `${tooltipPosition.left}px`,
               transform: "translate(-50%, -100%)",
+              zIndex: 50,
             }}
           >
             {selectedRangeDisplay}
