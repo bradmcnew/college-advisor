@@ -40,3 +40,9 @@ export interface DayAvailability {
   startTime: Date;
   endTime: Date;
 }
+
+export interface TimeRange {
+  day: Date;
+  startTime: string;
+  endTime: string;
+}
