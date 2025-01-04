@@ -12,7 +12,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import ImageUploader from "~/app/profile/edit/ImageUploader";
-import StatusToast from "~/app/profile/edit/StatusToast";
+import StatusToast from "~/app/components/StatusToast";
 import { getProfileWithImage, updateProfileWithImage } from "~/server/queries";
 
 // EditProfileProps Interface
@@ -79,7 +79,7 @@ export default async function EditProfilePage({
       (!profileImageUrl || profileImageUrl === userProfile.user?.image);
 
     if (isProfileUnchanged) {
-      redirect("/profile/edit?status=profile-updated");
+      redirect("/profile/view");
     }
 
     try {
@@ -91,7 +91,7 @@ export default async function EditProfilePage({
         image: profileImageUrl ?? null,
       });
       // Redirect to the edit profile page upon successful update
-      redirect("/profile/edit?status=profile-updated");
+      redirect("/profile/view");
     } catch (error: any) {
       // If the error is a NEXT_REDIRECT, rethrow it to allow Next.js to handle the redirect
       if (error.digest && error.digest.startsWith("NEXT_REDIRECT")) {

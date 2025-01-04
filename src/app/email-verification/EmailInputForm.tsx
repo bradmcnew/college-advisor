@@ -16,10 +16,14 @@ interface EmailInputFormProps {
 }
 
 export default async function EmailInputForm({
-  message,
-  isSuccess,
   isVerified = false,
 }: EmailInputFormProps) {
+  const session = await auth();
+
+  if (!session) {
+    redirect("/");
+  }
+
   const handleSubmit = async (formData: FormData) => {
     "use server";
     const eduEmailRaw = formData.get("email");
@@ -30,18 +34,20 @@ export default async function EmailInputForm({
 
     const lowerCaseEduEmail = eduEmailRaw.toLowerCase();
 
+    const userProfile = await db.query.userProfiles.findFirst({
+      where: (table, { eq }) => eq(table.eduEmail, lowerCaseEduEmail),
+    });
+
+    if (userProfile && userProfile?.userId !== session.userId) {
+      redirect("/email-verification?status=email-in-use");
+    }
+
     // Validate the email format
     if (!lowerCaseEduEmail.endsWith(".edu")) {
       redirect("/email-verification?status=invalid-email");
     }
 
     try {
-      const session = await auth();
-
-      if (!session) {
-        redirect("/");
-      }
-
       // Generate a verification token
       const token = jwt.sign(
         { userId: session.userId, eduEmail: lowerCaseEduEmail },
@@ -93,14 +99,6 @@ export default async function EmailInputForm({
       // Redirect to the success page
       redirect("/email-verification?status=sent");
     } catch (error: any) {
-      // Handle unique constraint violation
-      if (
-        error.code === "23505" && // PostgreSQL unique violation error code
-        error.constraint === "unique_eduEmail"
-      ) {
-        redirect("/email-verification?status=email-in-use");
-      }
-
       // If the error is a NEXT_REDIRECT, rethrow it to allow Next.js to handle the redirect
       if (error.digest && error.digest.startsWith("NEXT_REDIRECT")) {
         throw error;
@@ -125,18 +123,6 @@ export default async function EmailInputForm({
             We need to verify your email to ensure you are a student.
           </p>
         </div>
-
-        {message && (
-          <div
-            className={`rounded-md p-3 text-sm ${
-              isSuccess
-                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
-                : "bg-destructive/20 text-destructive"
-            }`}
-          >
-            {message}
-          </div>
-        )}
 
         <form action={handleSubmit} className="space-y-4">
           <div>

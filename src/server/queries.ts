@@ -252,6 +252,17 @@ export const getProfilePic = async () => {
   return userImage?.image;
 };
 
+export const getProfile = async () => {
+  const user = await auth();
+  if (!user?.userId) throw new Error("Unauthorized");
+
+  const profile = await db.query.userProfiles.findFirst({
+    where: (model, { eq }) => eq(model.userId, user.userId),
+  });
+
+  return profile;
+};
+
 export const getProfileWithImage = async () => {
   const user = await auth();
   if (!user?.userId) throw new Error("Unauthorized");
