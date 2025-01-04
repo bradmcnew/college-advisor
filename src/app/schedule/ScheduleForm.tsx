@@ -57,21 +57,15 @@ export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
       try {
         const availabilities = await getAvailability(mentorId);
         const ranges = availabilities.map((avail) => {
-          const startDate = new Date(avail.startTime);
-          const endDate = new Date(avail.endTime);
+          const startHours = avail.startTime.slice(11, 13);
+          const startMinutes = avail.startTime.slice(14, 16);
+          const endHours = avail.endTime.slice(11, 13);
+          const endMinutes = avail.endTime.slice(14, 16);
 
           return {
             day: utcToLocalDate(avail.day),
-            start_time: startDate.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            }),
-            end_time: endDate.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            }),
+            start_time: `${startHours}:${startMinutes}`,
+            end_time: `${endHours}:${endMinutes}`,
           };
         });
         console.log("Fetched ranges:", ranges);
