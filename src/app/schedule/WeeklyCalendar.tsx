@@ -21,9 +21,9 @@ interface WeeklyCalendarProps {
 }
 
 /**
- * Array representing hours from 7 AM to 11 PM.
+ * Array representing hours from 8 AM to 11 PM.
  */
-const HOURS = Array.from({ length: 17 }, (_, i) => 7 + i); // 7 AM to 11 PM
+const HOURS = Array.from({ length: 15 }, (_, i) => 8 + i); // 8 AM to 11 PM
 
 /**
  * Converts 24-hour time to 12-hour format with AM/PM.
@@ -236,7 +236,7 @@ export default function WeeklyCalendar({
       (range) =>
         range.day.toDateString() === day.toDateString() &&
         hour >= parseInt(range.start_time.split(":")[0] ?? "0", 10) &&
-        hour < parseInt(range.end_time.split(":")[0] ?? "0", 10),
+        hour <= parseInt(range.end_time.split(":")[0] ?? "0", 10) - 1,
     );
   };
 
