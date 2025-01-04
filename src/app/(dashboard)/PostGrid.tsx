@@ -102,7 +102,7 @@ export const PostGrid = ({
           )
         : await fetchPostsAction(limit, offset);
 
-    // Filter out any duplicate posts
+    // Filter out any duplicates
     const uniqueMorePosts = morePosts.filter(
       (newPost) =>
         !allPosts.some((existingPost) => existingPost.id === newPost.id),
