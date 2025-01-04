@@ -26,3 +26,10 @@ export interface Availability {
   start_time: string; // ISO datetime string
   end_time: string; // ISO datetime string
 }
+
+export interface UserProfile {
+  bio: string;
+  schoolYear: "Freshman" | "Sophomore" | "Junior" | "Senior" | "Graduate";
+  graduationYear: number;
+  image: string | null;
+}

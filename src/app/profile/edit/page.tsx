@@ -1,8 +1,5 @@
 import { redirect } from "next/navigation";
 import { auth } from "~/server/auth";
-import { db } from "~/server/db";
-import { userProfiles, users } from "~/server/db/schema";
-import { eq } from "drizzle-orm";
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import {
@@ -16,24 +13,11 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import ImageUploader from "~/app/profile/edit/ImageUploader";
 import StatusToast from "~/app/profile/edit/StatusToast";
+import { getProfileWithImage, updateProfileWithImage } from "~/server/queries";
 
 // EditProfileProps Interface
 interface EditProfileProps {
   searchParams?: { status?: string };
-}
-
-// UserProfile Interface
-interface UserProfile {
-  userId: string;
-  bio: string;
-  schoolYear: "Freshman" | "Sophomore" | "Junior" | "Senior" | "Graduate";
-  graduationYear: number;
-  eduEmail: string;
-  isEduVerified: boolean;
-  isMentor: boolean;
-  user?: {
-    image: string | null;
-  };
 }
 
 export default async function EditProfilePage({
@@ -46,17 +30,7 @@ export default async function EditProfilePage({
     redirect("/");
   }
 
-  // Fetch the user's profile from the database
-  const userProfile = (await db.query.userProfiles.findFirst({
-    where: (table, { eq }) => eq(table.userId, session.userId),
-    with: {
-      user: {
-        columns: {
-          image: true,
-        },
-      },
-    },
-  })) as UserProfile | null;
+  const userProfile = await getProfileWithImage();
 
   // If the user is not a mentor or their .edu email is not verified, redirect them
   if (!userProfile?.isMentor || !userProfile.isEduVerified) {
@@ -73,14 +47,6 @@ export default async function EditProfilePage({
       10,
     );
     const profileImageUrl = formData.get("profile_image_url") as string | null;
-
-    // Debugging: Log the form data
-    console.log("Form Data Received:", {
-      bio,
-      schoolYear,
-      graduationYear,
-      profileImageUrl,
-    });
 
     // Basic validation
     if (!bio || !schoolYear || isNaN(graduationYear)) {
@@ -118,30 +84,17 @@ export default async function EditProfilePage({
 
     try {
       // Update the userProfiles table with the additional information
-      await db
-        .update(userProfiles)
-        .set({
-          bio,
-          schoolYear: schoolYear as
-            | "Freshman"
-            | "Sophomore"
-            | "Junior"
-            | "Senior"
-            | "Graduate",
-          graduationYear,
-        })
-        .where(eq(userProfiles.userId, session.userId));
-
-      // Update the user's image in the 'users' table if a new image URL is provided
-      if (profileImageUrl) {
-        await db
-          .update(users)
-          .set({
-            image: profileImageUrl,
-          })
-          .where(eq(users.id, session.userId));
-      }
-
+      await updateProfileWithImage({
+        bio,
+        schoolYear: schoolYear as
+          | "Freshman"
+          | "Sophomore"
+          | "Junior"
+          | "Senior"
+          | "Graduate",
+        graduationYear,
+        image: profileImageUrl ?? null,
+      });
       // Redirect to the edit profile page upon successful update
       redirect("/profile/edit?status=profile-updated");
     } catch (error: any) {

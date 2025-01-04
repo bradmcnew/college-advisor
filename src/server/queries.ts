@@ -13,7 +13,7 @@ import {
   meetings,
 } from "~/server/db/schema"; // Adjust this import path to where your schema is defined
 import { eq, and, desc } from "drizzle-orm";
-
+import { UserProfile } from "~/app/types";
 export async function getPosts(limit = 20, offset = 0) {
   const user = await auth();
   if (!user?.userId) throw new Error("Unauthorized");
@@ -248,4 +248,50 @@ export const getProfilePic = async () => {
   });
 
   return userImage?.image;
+};
+
+export const getProfileWithImage = async () => {
+  const user = await auth();
+  if (!user?.userId) throw new Error("Unauthorized");
+
+  const profile = await db.query.userProfiles.findFirst({
+    where: (model, { eq }) => eq(model.userId, user.userId),
+    with: {
+      user: {
+        columns: {
+          image: true,
+        },
+      },
+    },
+  });
+
+  return profile;
+};
+
+export const updateProfileWithImage = async (profile: UserProfile) => {
+  const user = await auth();
+  if (!user?.userId) throw new Error("Unauthorized");
+
+  await db
+    .update(userProfiles)
+    .set({
+      bio: profile.bio,
+      schoolYear: profile.schoolYear as
+        | "Freshman"
+        | "Sophomore"
+        | "Junior"
+        | "Senior"
+        | "Graduate",
+      graduationYear: profile.graduationYear,
+    })
+    .where(eq(userProfiles.userId, user.userId));
+
+  if (profile.image) {
+    await db
+      .update(users)
+      .set({
+        image: profile.image,
+      })
+      .where(eq(users.id, user.userId));
+  }
 };
