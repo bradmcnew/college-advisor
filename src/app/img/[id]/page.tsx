@@ -1,4 +1,4 @@
-import PostPage from "~/app/components/full-post-page";
+import PostPage from "~/app/img/[id]/FullPostPage";
 
 export default async function FullPostPage({
   params,

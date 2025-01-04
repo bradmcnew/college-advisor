@@ -14,7 +14,7 @@ import {
 } from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import ImageUploader from "~/app/components/image-uploader";
+import ImageUploader from "~/app/profile/edit/ImageUploader";
 import StatusToast from "~/app/profile/edit/StatusToast";
 
 // EditProfileProps Interface

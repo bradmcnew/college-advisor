@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { cn } from "~/lib/utils";
-import { AvatarIcon } from "~/app/_components/avatar";
+import { AvatarIcon } from "~/app/components/Avatar";
 import {
   NavigationMenu,
   NavigationMenuContent,

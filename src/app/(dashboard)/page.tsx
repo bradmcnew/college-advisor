@@ -1,8 +1,8 @@
 import { auth } from "~/server/auth";
 import { LoginPage } from "~/app/components/Login";
 import { getMajors, getSchools } from "~/server/queries";
-import { FilterButton } from "./_components/filter-button";
-import { PostGrid } from "./components/post-grid";
+import { FilterButton } from "~/app/components/FilterButton";
+import { PostGrid } from "~/app/(dashboard)/PostGrid";
 import { Filter } from "lucide-react";
 import {
   Popover,
@@ -13,7 +13,7 @@ import { Button } from "~/components/ui/button";
 import {
   fetchPostsAction,
   fetchPostsByFilterAction,
-} from "./actions/post-actions";
+} from "~/app/(dashboard)/actions";
 
 export default async function HomePage({
   searchParams,

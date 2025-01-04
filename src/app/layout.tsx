@@ -2,7 +2,7 @@ import "~/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
-import { NavBarBase } from "~/app/_components/navigation-client";
+import { NavBarBase } from "~/app/components/navbar/NavigationClient";
 import { getProfilePic } from "~/server/queries";
 import { auth } from "~/server/auth";
 import { ThemeProvider } from "~/components/theme-provider";

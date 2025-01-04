@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { ModeToggle } from "~/app/_components/theme-toggle";
+import { ModeToggle } from "~/app/components/navbar/ThemeToggle";
 
 const AvatarPic = ({ profilePic }: { profilePic: string }) => {
   return (

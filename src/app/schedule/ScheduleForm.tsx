@@ -10,8 +10,8 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { useToast } from "~/hooks/use-toast";
-import { submitAvailability, getAvailability } from "./actions";
-import WeeklyCalendar from "./WeeklyCalendar";
+import { submitAvailability, getAvailability } from "~/app/schedule/actions";
+import WeeklyCalendar from "~/app/schedule/WeeklyCalendar";
 
 interface TimeRange {
   day: Date;
