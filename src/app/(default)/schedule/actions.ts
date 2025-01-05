@@ -1,15 +1,8 @@
 "use server";
 
-import { and, eq, inArray } from "drizzle-orm";
 import { auth } from "~/server/auth";
-import { db } from "~/server/db";
-import { meetings, availability } from "~/server/db/schema";
-import {
-  deleteAvailability,
-  getAvailability,
-  setAvailability,
-} from "~/server/queries";
 import { DayAvailability } from "~/app/types";
+import { deleteAvailability, setAvailability } from "~/server/queries";
 
 /**
  * Handles the availability submission by inserting the selected time ranges into the database.
@@ -18,10 +11,11 @@ import { DayAvailability } from "~/app/types";
 export async function submitAvailability(
   payload: {
     day: string;
-    startTime: string; // "HH:MM"
-    endTime: string; // "HH:MM"
+    startTime: string;
+    endTime: string;
   }[],
 ) {
+  console.log("payload", payload);
   const session = await auth();
   const mentorId = session?.userId;
   if (!mentorId) {
@@ -33,41 +27,15 @@ export async function submitAvailability(
     await deleteAvailability(mentorId);
 
     const formattedPayload = payload.map((item) => {
-      // Create a Date object for the specific day
-      const baseDate = new Date(item.day);
-
-      // Parse the time strings
-      const [startHour, startMinute] = item.startTime.split(":").map(Number);
-      const [endHour, endMinute] = item.endTime.split(":").map(Number);
-
-      // Create UTC dates for start and end times
-      const startTime = new Date(
-        Date.UTC(
-          baseDate.getFullYear(),
-          baseDate.getMonth(),
-          baseDate.getDate(),
-          startHour,
-          startMinute,
-          0,
-        ),
-      );
-
-      const endTime = new Date(
-        Date.UTC(
-          baseDate.getFullYear(),
-          baseDate.getMonth(),
-          baseDate.getDate(),
-          endHour,
-          endMinute,
-          0,
-        ),
-      );
+      // Parse the full UTC ISO strings
+      const startDateTime = new Date(item.startTime);
+      const endDateTime = new Date(item.endTime);
 
       return {
         mentorId: mentorId,
         day: item.day,
-        startTime: startTime,
-        endTime: endTime,
+        startTime: startDateTime,
+        endTime: endDateTime,
       } as DayAvailability;
     });
 

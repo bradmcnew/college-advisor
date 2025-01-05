@@ -21,6 +21,7 @@ interface ScheduleFormProps {
 }
 
 export default function ScheduleForm({
+  mentorId,
   initialAvailabilities,
 }: ScheduleFormProps) {
   const { toast } = useToast();
@@ -28,31 +29,54 @@ export default function ScheduleForm({
   // Helper function to convert UTC date to local date while preserving the date
   const utcToLocalDate = (utcDate: string): Date => {
     const date = new Date(utcDate);
-    const localDate = new Date();
-    localDate.setFullYear(date.getUTCFullYear());
-    localDate.setMonth(date.getUTCMonth());
-    localDate.setDate(date.getUTCDate());
-    localDate.setHours(0, 0, 0, 0);
+    console.log("utcDate", date.toISOString());
+    const localDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      date.getHours(), // Midnight local time
+      0,
+      0,
+      0,
+    );
+    console.log("localDate", localDate);
     return localDate;
+  };
+
+  // Helper function to convert UTC time string to "HH:MM"
+  const utcToLocalTime = (utcTime: string): string => {
+    const date = new Date(utcTime);
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${hours}:${minutes}`;
   };
 
   const [selectedRanges, setSelectedRanges] = useState<TimeRange[]>(() => {
     return initialAvailabilities.map((avail) => ({
-      day: utcToLocalDate(avail.day),
-      startTime: `${avail.startTime.slice(11, 13)}:${avail.startTime.slice(14, 16)}`,
-      endTime: `${avail.endTime.slice(11, 13)}:${avail.endTime.slice(14, 16)}`,
+      day: utcToLocalDate(avail.startTime),
+      startTime: utcToLocalTime(avail.startTime),
+      endTime: utcToLocalTime(avail.endTime),
     }));
   });
-  // Helper function to convert local date to UTC for API submission
-  const localToUTCDate = (localDate: Date): string => {
-    const utcDate = new Date(
-      Date.UTC(
-        localDate.getFullYear(),
-        localDate.getMonth(),
-        localDate.getDate(),
-      ),
+
+  // Helper function to convert local date to UTC ISO string
+  const localToUTCDateTime = (localDate: Date, localTime: string): string => {
+    const [hours, minutes] = localTime.split(":").map(Number);
+    const date = new Date(localDate);
+    date.setHours(hours ?? 0, minutes, 0, 0);
+    console.log(
+      "local to utc datetime:\n",
+      "localDate",
+      localDate,
+      "\n",
+      "utcDate",
+      date,
     );
-    return utcDate.toISOString().split("T")[0] ?? "";
+    return date.toISOString();
+  };
+
+  const getUTCDate = (utcDate: string): string => {
+    return utcDate.substring(0, 10);
   };
 
   const handleSubmit = useCallback(async () => {
@@ -65,11 +89,16 @@ export default function ScheduleForm({
       return;
     }
 
-    const payload = selectedRanges.map((range) => ({
-      day: localToUTCDate(range.day),
-      startTime: range.startTime,
-      endTime: range.endTime,
-    }));
+    const payload = selectedRanges.map((range) => {
+      const localStart = localToUTCDateTime(range.day, range.startTime);
+      const localEnd = localToUTCDateTime(range.day, range.endTime);
+      return {
+        day: getUTCDate(localStart), // "YYYY-MM-DD"
+        startTime: localStart, // Full UTC ISO string
+        endTime: localEnd, // Full UTC ISO string
+      };
+    });
+    console.log("payload", payload);
 
     try {
       await submitAvailability(payload);
@@ -86,7 +115,7 @@ export default function ScheduleForm({
         variant: "destructive",
       });
     }
-  }, [selectedRanges, localToUTCDate, toast]);
+  }, [selectedRanges, toast]);
 
   return (
     <div>
