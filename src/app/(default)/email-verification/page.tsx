@@ -2,8 +2,7 @@ import { redirect } from "next/navigation";
 import SentEmailVerification from "~/app/(default)/email-verification/Sent";
 import EmailInputForm from "~/app/(default)/email-verification/EmailInputForm";
 import { auth } from "~/server/auth";
-import { db } from "~/server/db";
-import StatusToast from "../../components/StatusToast";
+import StatusToast from "~/app/components/StatusToast";
 import { getProfile } from "~/server/queries";
 
 interface EmailVerificationPageProps {

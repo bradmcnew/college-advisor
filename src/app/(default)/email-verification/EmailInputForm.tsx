@@ -7,7 +7,6 @@ import jwt from "jsonwebtoken";
 import { env } from "~/env";
 import nodemailer from "nodemailer";
 import { db } from "~/server/db";
-import { userProfiles } from "~/server/db/schema";
 
 interface EmailInputFormProps {
   message?: string;
