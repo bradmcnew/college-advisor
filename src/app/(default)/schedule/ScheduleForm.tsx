@@ -1,11 +1,8 @@
 "use client";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "~/components/ui/button";
 import { useToast } from "~/hooks/use-toast";
-import {
-  submitAvailability,
-  getAvailabilityAction,
-} from "~/app/(default)/schedule/actions";
+import { submitAvailability } from "~/app/(default)/schedule/actions";
 import WeeklyCalendar from "~/app/(default)/schedule/WeeklyCalendar";
 
 interface TimeRange {
@@ -16,12 +13,17 @@ interface TimeRange {
 
 interface ScheduleFormProps {
   mentorId: string;
+  initialAvailabilities: {
+    day: string;
+    startTime: string;
+    endTime: string;
+  }[];
 }
 
-export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
+export default function ScheduleForm({
+  initialAvailabilities,
+}: ScheduleFormProps) {
   const { toast } = useToast();
-  const [selectedRanges, setSelectedRanges] = useState<TimeRange[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   // Helper function to convert UTC date to local date while preserving the date
   const utcToLocalDate = (utcDate: string): Date => {
@@ -34,6 +36,13 @@ export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
     return localDate;
   };
 
+  const [selectedRanges, setSelectedRanges] = useState<TimeRange[]>(() => {
+    return initialAvailabilities.map((avail) => ({
+      day: utcToLocalDate(avail.day),
+      startTime: `${avail.startTime.slice(11, 13)}:${avail.startTime.slice(14, 16)}`,
+      endTime: `${avail.endTime.slice(11, 13)}:${avail.endTime.slice(14, 16)}`,
+    }));
+  });
   // Helper function to convert local date to UTC for API submission
   const localToUTCDate = (localDate: Date): string => {
     const utcDate = new Date(
@@ -45,37 +54,6 @@ export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
     );
     return utcDate.toISOString().split("T")[0] ?? "";
   };
-
-  useEffect(() => {
-    const fetchAvailability = async () => {
-      try {
-        const availabilities = await getAvailabilityAction(mentorId);
-        const ranges = availabilities.map((avail) => {
-          const startHours = avail.startTime.slice(11, 13);
-          const startMinutes = avail.startTime.slice(14, 16);
-          const endHours = avail.endTime.slice(11, 13);
-          const endMinutes = avail.endTime.slice(14, 16);
-
-          return {
-            day: utcToLocalDate(avail.day),
-            startTime: `${startHours}:${startMinutes}`,
-            endTime: `${endHours}:${endMinutes}`,
-          };
-        });
-        console.log("Fetched ranges:", ranges);
-        setSelectedRanges(ranges);
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to load your availability. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    void fetchAvailability();
-  }, [mentorId, toast]);
 
   const handleSubmit = useCallback(async () => {
     if (selectedRanges.length === 0) {
@@ -109,10 +87,6 @@ export default function ScheduleForm({ mentorId }: ScheduleFormProps) {
       });
     }
   }, [selectedRanges, localToUTCDate, toast]);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div>

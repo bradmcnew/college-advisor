@@ -77,23 +77,3 @@ export async function submitAvailability(
     throw new Error("Failed to submit availability.");
   }
 }
-
-/**
- * Fetches the availability for a given mentor and converts it to local time.
- * @param mentorId The ID of the mentor.
- * @returns An array of availability objects with local times.
- */
-export async function getAvailabilityAction(mentorId: string) {
-  try {
-    const availabilities = await getAvailability(mentorId);
-
-    return availabilities.map((avail) => ({
-      day: avail.day,
-      startTime: avail.startTime.toISOString(),
-      endTime: avail.endTime.toISOString(),
-    }));
-  } catch (error) {
-    console.error("Failed to fetch availability:", error);
-    throw new Error("Failed to fetch availability.");
-  }
-}

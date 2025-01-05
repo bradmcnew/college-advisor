@@ -1,9 +1,9 @@
-import { redirect } from "next/navigation";
 import SentEmailVerification from "~/app/(default)/email-verification/Sent";
 import EmailInputForm from "~/app/(default)/email-verification/EmailInputForm";
 import { auth } from "~/server/auth";
 import StatusToast from "~/app/components/StatusToast";
 import { getProfile } from "~/server/queries";
+import { redirect } from "next/navigation";
 
 interface EmailVerificationPageProps {
   searchParams: { status?: string };
