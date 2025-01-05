@@ -45,9 +45,11 @@ export default function ScheduleForm({
 
   // Helper function to convert UTC time string to "HH:MM"
   const utcToLocalTime = (utcTime: string): string => {
+    console.log("utcTime", utcTime);
     const date = new Date(utcTime);
     const hours = String(date.getHours()).padStart(2, "0");
     const minutes = String(date.getMinutes()).padStart(2, "0");
+    console.log(`localTime: ${hours}:${minutes}`);
     return `${hours}:${minutes}`;
   };
 
