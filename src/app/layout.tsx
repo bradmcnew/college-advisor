@@ -21,7 +21,11 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode; modal: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html
+      lang="en"
+      className={`${GeistSans.variable}`}
+      suppressHydrationWarning
+    >
       <body className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-100 via-sky-100 to-gray-100 dark:from-gray-950 dark:via-slate-900 dark:to-gray-950">
         <ThemeProvider
           attribute="class"

@@ -38,6 +38,7 @@ export default async function EmailInputForm({
       where: (table, { eq }) => eq(table.eduEmail, lowerCaseEduEmail),
     });
 
+    // Check if the email is already in use by another user
     if (userProfile && userProfile?.userId !== session.userId) {
       redirect("/email-verification?status=email-in-use");
     }
@@ -56,7 +57,7 @@ export default async function EmailInputForm({
       );
 
       // Construct the verification URL
-      const verifyUrl = `${env.NEXT_PUBLIC_BASE_URL}/email-verification/verify?token=${token}`;
+      const verifyUrl = `${env.NEXT_PUBLIC_BASE_URL}/verify-email/?token=${token}`;
 
       // Configure the email transporter
       const transporter = nodemailer.createTransport(env.AUTH_EMAIL_SERVER);
@@ -75,26 +76,6 @@ export default async function EmailInputForm({
           <p>If you did not request this, please ignore this email.</p>
         `,
       });
-
-      // Perform an upsert operation
-      await db
-        .insert(userProfiles)
-        .values({
-          userId: session.userId,
-          eduEmail: lowerCaseEduEmail,
-          isEduVerified: false, // Initially false until verification
-          isMentor: false, // Adjust based on your logic
-          bio: "",
-          schoolYear: "Freshman",
-          graduationYear: new Date().getFullYear() + 4,
-        })
-        .onConflictDoUpdate({
-          target: userProfiles.userId,
-          set: {
-            eduEmail: lowerCaseEduEmail,
-            isEduVerified: false,
-          },
-        });
 
       // Redirect to the success page
       redirect("/email-verification?status=sent");

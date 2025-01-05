@@ -29,7 +29,7 @@ export default async function VerificationPage({
 
     const { userId, eduEmail } = decoded;
 
-    // Upsert the user profile
+    // Upsert the user profile with the verified email
     await db
       .insert(userProfiles)
       .values({
