@@ -37,8 +37,8 @@ export default async function EmailInputForm({
       where: (table, { eq }) => eq(table.eduEmail, lowerCaseEduEmail),
     });
 
-    // Check if the email is already in use by another user
-    if (userProfile && userProfile?.userId !== session.userId) {
+    // Check if the email is already in use
+    if (userProfile) {
       redirect("/email-verification?status=email-in-use");
     }
 

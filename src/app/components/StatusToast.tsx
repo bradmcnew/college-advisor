@@ -83,6 +83,12 @@ export default function StatusToast({ status }: StatusToastProps) {
         toastContent.description =
           "We've sent you an email to verify your email address. Please check your inbox.";
         break;
+      case "not-verified":
+        toastContent.title = "Email Not Verified";
+        toastContent.description =
+          "Your email has not been verified. Please check your inbox for the verification link.";
+        toastContent.variant = "destructive";
+        break;
       default:
         break;
     }
