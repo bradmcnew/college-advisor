@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback, Fragment } from "react";
 import { Label } from "~/components/ui/label";
 import { TimeRange } from "~/app/types";
+import LoadingSpinner from "~/app/components/LoadingSpinner";
 
 /**
  * Props for the WeeklyCalendar component.
@@ -125,6 +126,24 @@ export default function WeeklyCalendar({
     top: number;
     left: number;
   } | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [weekDays, setWeekDays] = useState<Date[]>([]);
+
+  /**
+   * Generates an array of the next 7 days starting from today.
+   * @returns An array of Date objects representing the next 7 days.
+   */
+  const getWeekDays = () => {
+    const today = new Date();
+    const weekStart = new Date(today);
+    weekStart.setHours(0, 0, 0, 0);
+
+    return Array.from({ length: 7 }, (_, i) => {
+      const day = new Date(weekStart);
+      day.setDate(weekStart.getDate() + i);
+      return day;
+    });
+  };
 
   /**
    * Handles the initiation of a drag action.
@@ -254,24 +273,6 @@ export default function WeeklyCalendar({
   };
 
   /**
-   * Generates an array of the next 7 days starting from today.
-   * @returns An array of Date objects representing the next 7 days.
-   */
-  const getWeekDays = () => {
-    const today = new Date();
-    const weekStart = new Date(today);
-    weekStart.setHours(0, 0, 0, 0);
-
-    return Array.from({ length: 7 }, (_, i) => {
-      const day = new Date(weekStart);
-      day.setDate(weekStart.getDate() + i);
-      return day;
-    });
-  };
-
-  const weekDays = getWeekDays();
-
-  /**
    * Formats the selected range for display.
    * @returns A formatted string representing the selected time range or null.
    */
@@ -306,8 +307,34 @@ export default function WeeklyCalendar({
     }
   }, [dragEnd]);
 
+  /**
+   * Fetches the week days and manages the loading state.
+   */
+  useEffect(() => {
+    const fetchWeekDays = async () => {
+      try {
+        // Simulate data fetching delay
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        const days = getWeekDays();
+        setWeekDays(days);
+      } catch (error) {
+        console.error("Error fetching week days:", error);
+        // Handle error accordingly, e.g., show a toast notification
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchWeekDays();
+  }, []);
+
   return (
-    <div>
+    <div className="relative">
+      {isLoading && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-white">
+          <LoadingSpinner />
+        </div>
+      )}
       <Label className="mb-2">Select Your Availability</Label>
       <div ref={calendarRef} className="relative overflow-auto">
         <div className="grid grid-cols-8 divide-x divide-gray-200 border border-gray-300">
@@ -342,9 +369,9 @@ export default function WeeklyCalendar({
                   <div
                     key={key}
                     className="relative border-t border-gray-200"
-                    aria-label={`Select time from ${formatHour(hour)} to ${formatHour(
-                      hour + 1,
-                    )} on ${day.toLocaleDateString()}`}
+                    aria-label={`Select time from ${formatHour(
+                      hour,
+                    )} to ${formatHour(hour + 1)} on ${day.toLocaleDateString()}`}
                   >
                     <div
                       ref={(el: HTMLDivElement | null): void => {
