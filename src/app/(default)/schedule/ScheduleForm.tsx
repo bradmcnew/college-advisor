@@ -51,11 +51,13 @@ export default function ScheduleForm({
   };
 
   const [selectedRanges, setSelectedRanges] = useState<TimeRange[]>(() => {
-    return initialAvailabilities.map((avail) => ({
+    const ranges = initialAvailabilities.map((avail) => ({
       day: utcToLocalDate(avail.startTime),
       startTime: utcToLocalTime(avail.startTime),
       endTime: utcToLocalTime(avail.endTime),
     }));
+    console.log("selectedRanges", ranges);
+    return ranges;
   });
 
   // Helper function to convert local date to UTC ISO string
