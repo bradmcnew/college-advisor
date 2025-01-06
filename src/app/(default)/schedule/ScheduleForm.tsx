@@ -1,5 +1,6 @@
 "use client";
-import { useState, useCallback } from "react";
+
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { useToast } from "~/hooks/use-toast";
 import { submitAvailability } from "~/app/(default)/schedule/actions";
@@ -50,15 +51,17 @@ export default function ScheduleForm({
     return `${hours}:${minutes}`;
   };
 
-  const [selectedRanges, setSelectedRanges] = useState<TimeRange[]>(() => {
+  const [selectedRanges, setSelectedRanges] = useState<TimeRange[]>([]);
+
+  useEffect(() => {
     const ranges = initialAvailabilities.map((avail) => ({
       day: utcToLocalDate(avail.startTime),
       startTime: utcToLocalTime(avail.startTime),
       endTime: utcToLocalTime(avail.endTime),
     }));
     console.log("selectedRanges", ranges);
-    return ranges;
-  });
+    setSelectedRanges(ranges);
+  }, [initialAvailabilities]);
 
   // Helper function to convert local date to UTC ISO string
   const localToUTCDateTime = (localDate: Date, localTime: string): string => {
