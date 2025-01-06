@@ -7,21 +7,18 @@ import WeeklyCalendar from "~/app/(default)/schedule/WeeklyCalendar";
 
 interface TimeRange {
   day: Date;
-  startTime: string; // "HH:MM"
-  endTime: string; // "HH:MM"
+  startTime: string; // iso string
+  endTime: string; // iso string
 }
 
 interface ScheduleFormProps {
-  mentorId: string;
   initialAvailabilities: {
-    day: string;
     startTime: string;
     endTime: string;
   }[];
 }
 
 export default function ScheduleForm({
-  mentorId,
   initialAvailabilities,
 }: ScheduleFormProps) {
   const { toast } = useToast();

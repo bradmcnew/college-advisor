@@ -275,14 +275,12 @@ export const availability = createTable(
     mentorId: varchar("mentor_id", { length: 255 })
       .notNull()
       .references(() => users.id),
-    day: date("day").notNull(), // Date of Availability
     startTime: timestamp("start_time", { withTimezone: true }).notNull(), // Start Time
     endTime: timestamp("end_time", { withTimezone: true }).notNull(), // End Time
     created_at: timestamp("created_at").notNull().defaultNow(),
     updated_at: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => ({
-    mentorDayIdx: index("mentor_day_idx").on(table.mentorId, table.day),
     timeRangeCheck: check(
       "time_range_check",
       sql`${table.endTime} > ${table.startTime}`,

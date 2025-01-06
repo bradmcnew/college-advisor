@@ -10,15 +10,9 @@ export default async function ScheduleWrapper({
 }: ScheduleWrapperProps) {
   const availabilities = await getAvailability(mentorId);
   const initialAvailabilities = availabilities.map((avail) => ({
-    day: avail.day,
     startTime: avail.startTime.toISOString(),
     endTime: avail.endTime.toISOString(),
   }));
 
-  return (
-    <ScheduleForm
-      mentorId={mentorId}
-      initialAvailabilities={initialAvailabilities}
-    />
-  );
+  return <ScheduleForm initialAvailabilities={initialAvailabilities} />;
 }

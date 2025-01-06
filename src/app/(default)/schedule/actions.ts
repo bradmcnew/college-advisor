@@ -10,7 +10,6 @@ import { deleteAvailability, setAvailability } from "~/server/queries";
  */
 export async function submitAvailability(
   payload: {
-    day: string;
     startTime: string;
     endTime: string;
   }[],
@@ -33,7 +32,6 @@ export async function submitAvailability(
 
       return {
         mentorId: mentorId,
-        day: item.day,
         startTime: startDateTime,
         endTime: endDateTime,
       } as DayAvailability;
