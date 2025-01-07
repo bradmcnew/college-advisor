@@ -58,6 +58,7 @@ SchoolsList.propTypes = {
       'school.student.size': PropTypes.number.isRequired,
     })
   ).isRequired,
+  page: PropTypes.number.isRequired,
 };
 
 export default SchoolsList;

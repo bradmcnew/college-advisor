@@ -1,115 +1,38 @@
 // app/schools/page.tsx
 
-import React, { useState } from 'react';
-import SchoolsList from '../../components/SchoolsList';
+import React from 'react';
+import ClientSchoolsList from './ClientSchoolsList';
 
-interface School {
-  id: number;
-  'school.name': string;
-  'school.city': string;
-  'school.state': string;
-  'school.student.size': number;
-}
+// Server Component: by default, files in `app/` are Server Components
+// unless we add "use client" at the top.
+export default async function SchoolsPage({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string };
+}) {
+  const searchParams2 = await searchParams;
+  const page =  searchParams2?.page ? parseInt(searchParams2.page, 10) : 1;
+  const perPage = searchParams2?.per_page ? parseInt(searchParams2.per_page, 10) : 10;
 
-interface SchoolsPageProps {
-  initialSchools: School[];
-  initialPage: number;
-}
+  // Construct the URL to our internal API route
+  const protocol = process.env.VERCEL ? 'https' : 'http';  // or detect dynamically if needed
+  const host = process.env.VERCEL_URL || 'localhost:3000';
 
-const SchoolsPage: React.FC<SchoolsPageProps> = ({ initialSchools, initialPage }) => {
-  const [schools, setSchools] = useState<School[]>(initialSchools);
-  const [page, setPage] = useState<number>(initialPage);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const perPage = 10;
+  // If running locally, ensure the correct base URL
+  const apiURL = `${protocol}://${host}/api/schools?page=${page}&per_page=${perPage}`;
 
-  const fetchSchools = async (newPage: number) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/schools?page=${newPage}&per_page=${perPage}`);
-      if (!res.ok) {
-        throw new Error(`Error: ${res.statusText}`);
-      }
-      const data: School[] = await res.json();
-      setSchools(data);
-      setPage(newPage);
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || 'An unexpected error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Fetch data on the server side
+  const res = await fetch(apiURL, { cache: 'no-store' });
+  if (!res.ok) {
+    // In a real app, you'd handle this gracefully (redirect, error message, etc.)
+    throw new Error(`Failed to fetch data: ${res.statusText}`);
+  }
 
-  const handleNext = () => {
-    fetchSchools(page + 1);
-  };
-
-  const handlePrevious = () => {
-    if (page > 1) {
-      fetchSchools(page - 1);
-    }
-  };
+  const initialSchools = await res.json();
 
   return (
-    <div>
-      <SchoolsList
-        schools={schools}
-        page={page}
-        handleNext={handleNext}
-        handlePrevious={handlePrevious}
-        loading={loading}
-        error={error}
-      />
+    <div style={{ padding: '20px' }}>
+      <ClientSchoolsList initialSchools={initialSchools} initialPage={page} />
     </div>
   );
-};
-
-export async function getServerSideProps(context: any) {
-  const { page = '1', per_page = '10' } = context.query;
-
-  // Validate query parameters
-  const pageNumber = parseInt(page, 10);
-  const perPageNumber = parseInt(per_page, 10);
-
-  if (
-    isNaN(pageNumber) ||
-    isNaN(perPageNumber) ||
-    pageNumber < 1 ||
-    perPageNumber < 1
-  ) {
-    return {
-      props: {
-        initialSchools: [],
-        initialPage: 1,
-      },
-    };
-  }
-
-  const API_URL = `http://localhost:3000/api/schools?page=${pageNumber}&per_page=${perPageNumber}`;
-
-  try {
-    const res = await fetch(API_URL);
-    if (!res.ok) {
-      throw new Error(`Failed to fetch data: ${res.statusText}`);
-    }
-    const data: School[] = await res.json();
-    return {
-      props: {
-        initialSchools: data,
-        initialPage: pageNumber,
-      },
-    };
-  } catch (error) {
-    console.error('getServerSideProps Error:', error);
-    return {
-      props: {
-        initialSchools: [],
-        initialPage: pageNumber,
-      },
-    };
-  }
 }
-
-export default SchoolsPage;

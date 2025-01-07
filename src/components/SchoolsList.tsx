@@ -3,6 +3,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+// src/components/SchoolsList.tsx
+interface SchoolsListProps {
+  schools: School[];
+  page: number; // Add this line
+  handleNext: () => void;
+  handlePrevious: () => void;
+  loading: boolean;
+  error: string | null;
+}
+
 interface School {
     id: number;
     'school.name': string;
@@ -11,7 +21,7 @@ interface School {
     'school.student.size': number;
 }
 
-const SchoolsList = ({ schools }: { schools: School[] }) => {
+const SchoolsList = ({ schools, page, handleNext, handlePrevious, loading, error }: SchoolsListProps) => {
   return (
     <div>
       <h1>Schools</h1>
@@ -58,6 +68,7 @@ SchoolsList.propTypes = {
       'school.student.size': PropTypes.number.isRequired,
     })
   ).isRequired,
+  page: PropTypes.number.isRequired,
 };
 
 export default SchoolsList;
