@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useToast } from "~/hooks/use-toast";
+import { toast } from "sonner";
 import { UploadButton } from "~/utils/uploadthing";
 import { Input } from "~/components/ui/input";
 import Image from "next/image";
@@ -10,7 +10,6 @@ interface ImageUploaderProps {
 }
 
 export default function ImageUploader({ currentImage }: ImageUploaderProps) {
-  const { toast } = useToast();
   const [imageUrl, setImageUrl] = useState<string>(currentImage ?? "");
 
   const handleUploadComplete = (res: { url: string }[]) => {
@@ -26,8 +25,7 @@ export default function ImageUploader({ currentImage }: ImageUploaderProps) {
         hiddenInput.value = url;
       }
 
-      toast({
-        title: "Success",
+      toast.success("Success", {
         description: "Profile image updated successfully",
       });
     }
@@ -39,12 +37,12 @@ export default function ImageUploader({ currentImage }: ImageUploaderProps) {
         <Image
           src={imageUrl}
           alt="Profile Image"
-          className="mb-4 h-24 w-24 rounded-full object-cover ring-2 ring-primary/20"
+          className="ring-primary/20 mb-4 h-24 w-24 rounded-full object-cover ring-2"
           width={96}
           height={96}
         />
       ) : (
-        <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-muted text-muted-foreground ring-2 ring-primary/20">
+        <div className="bg-muted text-muted-foreground ring-primary/20 mb-4 flex h-24 w-24 items-center justify-center rounded-full ring-2">
           No Image
         </div>
       )}
@@ -52,10 +50,8 @@ export default function ImageUploader({ currentImage }: ImageUploaderProps) {
         endpoint="imageUploader"
         onClientUploadComplete={handleUploadComplete}
         onUploadError={(error: Error) => {
-          toast({
-            title: "Error",
+          toast.error("Error", {
             description: error.message,
-            variant: "destructive",
           });
         }}
       />

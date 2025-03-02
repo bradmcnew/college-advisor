@@ -50,5 +50,5 @@ export interface TimeRange {
 export interface Toast {
   title: string;
   description: string;
-  variant: "default" | "destructive";
+  variant: "success" | "error";
 }

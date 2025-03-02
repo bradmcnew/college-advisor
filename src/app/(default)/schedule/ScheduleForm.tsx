@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { Button } from "~/components/ui/button";
-import { useToast } from "~/hooks/use-toast";
+import { toast } from "sonner";
 import { submitAvailability } from "~/app/(default)/schedule/actions";
 import WeeklyCalendar from "~/app/(default)/schedule/WeeklyCalendar";
 
@@ -22,8 +22,6 @@ interface ScheduleFormProps {
 export default function ScheduleForm({
   initialAvailabilities,
 }: ScheduleFormProps) {
-  const { toast } = useToast();
-
   // Helper function to convert UTC date to local date while preserving the date
   const utcToLocalDate = (utcDate: string): Date => {
     const date = new Date(utcDate);
@@ -85,10 +83,8 @@ export default function ScheduleForm({
 
   const handleSubmit = useCallback(async () => {
     if (selectedRanges.length === 0) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Please set valid time ranges for at least one day.",
-        variant: "destructive",
       });
       return;
     }
@@ -106,20 +102,17 @@ export default function ScheduleForm({
 
     try {
       await submitAvailability(payload);
-      toast({
-        title: "Success",
+      toast.success("Success", {
         description: "Your availability has been updated.",
       });
     } catch (error: any) {
       console.error("Error submitting availability:", error);
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description:
           "There was an issue updating your availability. Please try again.",
-        variant: "destructive",
       });
     }
-  }, [selectedRanges, toast]);
+  }, [selectedRanges]);
 
   return (
     <div>

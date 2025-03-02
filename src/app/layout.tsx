@@ -3,7 +3,7 @@ import "~/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import { ThemeProvider } from "~/components/theme-provider";
-import { Toaster } from "~/components/ui/toaster";
+import { Toaster } from "sonner";
 
 // uploadthing
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
