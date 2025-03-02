@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export const LoginPage = () => {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-r from-blue-50 via-blue-100 to-white px-4 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-linear-to-r from-blue-50 via-blue-100 to-white px-4 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Hero Image */}
       <div className="mb-8 w-full max-w-md">
         <Image
@@ -29,7 +29,7 @@ export const LoginPage = () => {
       {/* Sign-In Button */}
       <Button
         onClick={() => signIn()}
-        className="w-full max-w-sm rounded-md bg-blue-600 px-6 py-3 text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
+        className="w-full max-w-sm rounded-md bg-blue-600 px-6 py-3 text-white transition hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
       >
         Sign In to Get Started
       </Button>

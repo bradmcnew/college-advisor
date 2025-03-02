@@ -16,7 +16,7 @@ import {
 
 export function NavBarBase({ profilePic }: { profilePic: string }) {
   return (
-    <div className="fixed left-0 right-0 top-0 z-20 flex items-center justify-between border-b border-border/40 bg-background/80 p-4 text-foreground backdrop-blur-sm transition-colors duration-300">
+    <div className="fixed left-0 right-0 top-0 z-20 flex items-center justify-between border-b border-border/40 bg-background/80 p-4 text-foreground backdrop-blur-xs transition-colors duration-300">
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
@@ -26,7 +26,7 @@ export function NavBarBase({ profilePic }: { profilePic: string }) {
                 <li className="row-span-3">
                   <NavigationMenuLink asChild>
                     <Link
-                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-primary/10 to-primary/5 p-6 no-underline outline-none transition-colors hover:bg-primary/10 focus:shadow-md dark:from-primary/20 dark:to-primary/10 dark:hover:bg-primary/20"
+                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-linear-to-b from-primary/10 to-primary/5 p-6 no-underline outline-hidden transition-colors hover:bg-primary/10 focus:shadow-md dark:from-primary/20 dark:to-primary/10 dark:hover:bg-primary/20"
                       href="/browse"
                     >
                       <div className="mb-2 mt-4 text-lg font-medium text-foreground">
@@ -110,9 +110,9 @@ const ListItem = React.forwardRef<React.ElementRef<"a">, ListItemProps>(
           <a
             ref={ref}
             className={cn(
-              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors",
+              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors",
               "hover:bg-accent hover:text-accent-foreground",
-              "focus:bg-accent focus:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-900",
+              "focus:bg-accent focus:text-accent-foreground focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-900",
               className,
             )}
             {...props}

@@ -22,7 +22,7 @@ const VerificationResult: React.FC<VerificationResultProps> = ({
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
-      <div className="rounded bg-white p-6 shadow dark:bg-gray-800">
+      <div className="rounded bg-white p-6 shadow-sm dark:bg-gray-800">
         <h2
           className={`text-xl font-semibold ${success ? "text-green-600" : "text-red-600"}`}
         >

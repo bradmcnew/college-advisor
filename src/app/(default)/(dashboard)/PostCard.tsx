@@ -5,7 +5,7 @@ import type { Card } from "~/app/types";
 export const PostCard = ({ card }: { card: Card; index: number }) => {
   return (
     <Link href={`/img/${card.id}`}>
-      <div className="group relative overflow-hidden rounded-xl border border-border/50 bg-card/90 p-4 text-card-foreground shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:bg-card/90 dark:shadow-lg dark:shadow-primary/5 dark:backdrop-blur-sm dark:hover:bg-card/95 dark:hover:shadow-primary/10">
+      <div className="group relative overflow-hidden rounded-xl border border-border/50 bg-card/90 p-4 text-card-foreground shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl dark:bg-card/90 dark:shadow-lg dark:shadow-primary/5 dark:backdrop-blur-xs dark:hover:bg-card/95 dark:hover:shadow-primary/10">
         {/* Profile Image Section */}
         <div className="relative mb-4 h-48 w-full overflow-hidden rounded-lg">
           <Image
@@ -15,7 +15,7 @@ export const PostCard = ({ card }: { card: Card; index: number }) => {
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4">
+          <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/90 to-transparent p-4">
             <h2 className="text-xl font-bold text-white">
               {card.name || "Student Name"}
             </h2>

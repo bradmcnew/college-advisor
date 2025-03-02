@@ -121,7 +121,7 @@ export default async function EditProfilePage({
           <div className="w-[72px]" />
         </div>
 
-        <Card className="shadow-sm">
+        <Card className="shadow-xs">
           <CardHeader className="pb-2 pt-4">
             <CardTitle className="text-sm">Biography</CardTitle>
           </CardHeader>
@@ -137,7 +137,7 @@ export default async function EditProfilePage({
           </CardContent>
         </Card>
 
-        <Card className="shadow-sm">
+        <Card className="shadow-xs">
           <CardHeader className="pb-2 pt-4">
             <CardTitle className="text-sm">Academic Details</CardTitle>
           </CardHeader>

@@ -99,7 +99,7 @@ export default async function PostPage({ id }: { id: string }) {
             <div className="mt-8">
               <Link
                 href="/meet"
-                className="inline-block rounded bg-primary px-6 py-3 text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+                className="inline-block rounded bg-primary px-6 py-3 text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-900"
                 aria-label="Schedule a video meeting with this mentor"
               >
                 Schedule a Video Meeting
