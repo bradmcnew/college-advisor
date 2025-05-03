@@ -62,9 +62,6 @@ export default [
     },
   },
   {
-    extends: ["plugin:react/jsx-runtime"],
-  },
-  {
     languageOptions: {
       parser: "@typescript-eslint/parser",
       parserOptions: {
