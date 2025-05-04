@@ -1,8 +1,8 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
 import GoogleProvider from "next-auth/providers/google";
-import EmailProvider from "next-auth/providers/nodemailer";
+import EmailProvider from "next-auth/providers/email";
+import DiscordProvider from "next-auth/providers/discord";
 import { env } from "~/env";
 
 import { db } from "~/server/db";
@@ -42,7 +42,10 @@ declare module "next-auth" {
  */
 export const authConfig = {
   providers: [
-    DiscordProvider,
+    DiscordProvider({
+      clientId: env.AUTH_DISCORD_ID,
+      clientSecret: env.AUTH_DISCORD_SECRET,
+    }),
     GoogleProvider({
       clientId: env.AUTH_GOOGLE_ID,
       clientSecret: env.AUTH_GOOGLE_SECRET,
@@ -50,7 +53,6 @@ export const authConfig = {
     EmailProvider({
       server: env.AUTH_EMAIL_SERVER,
       from: env.AUTH_EMAIL_FROM,
-      name: "Email",
     }),
     /**
      * ...add more providers here.
