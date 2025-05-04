@@ -73,6 +73,5 @@ export default [
   },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
-  // @ts-expect-error - config types
   pluginReact.configs.flat.recommended,
 ];
