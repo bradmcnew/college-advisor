@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { auth } from "~/server/auth";
 import jwt from "jsonwebtoken";
 import { env } from "~/env";
-import nodemailer from "nodemailer";
+import sgMail from '@sendgrid/mail'
 import { db } from "~/server/db";
 
 interface EmailInputFormProps {
@@ -58,11 +58,10 @@ export default async function EmailInputForm({
       // Construct the verification URL
       const verifyUrl = `${env.NEXT_PUBLIC_BASE_URL}/verify-email/?token=${token}`;
 
-      // Configure the email transporter
-      const transporter = nodemailer.createTransport(env.AUTH_EMAIL_SERVER);
+      sgMail.setApiKey(env.SENDGRID_API_KEY);
 
       // Send the verification email
-      await transporter.sendMail({
+      const msg = {
         to: lowerCaseEduEmail,
         from: env.AUTH_EMAIL_FROM,
         subject: "Verify Your College Email to Become a Mentor",
@@ -74,7 +73,9 @@ export default async function EmailInputForm({
           <p>This link will expire in 10 minutes.</p>
           <p>If you did not request this, please ignore this email.</p>
         `,
-      });
+      };
+
+      await sgMail.send(msg);
 
       // Redirect to the success page
       redirect("/email-verification?status=sent");

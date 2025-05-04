@@ -22,6 +22,7 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
     JWT_SECRET: z.string(),
+    SENDGRID_API_KEY: z.string(),
   },
 
   /**
@@ -49,6 +50,7 @@ export const env = createEnv({
     AUTH_EMAIL_FROM: process.env.AUTH_EMAIL_FROM,
     JWT_SECRET: process.env.JWT_SECRET,
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
