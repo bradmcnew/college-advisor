@@ -10,12 +10,12 @@ export default function RefreshPage() {
   const params = useParams();
   const connectedAccountId = params.id as string;
 
-  const [accountLinkCreatePending, setAccountLinkCreatePending] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (connectedAccountId) {
-      setAccountLinkCreatePending(true);
+      setIsLoading(true);
       setError(null);
 
       fetch("/api/stripe/create-account-link", {
@@ -46,7 +46,7 @@ export default function RefreshPage() {
         })
         .catch((err) => {
           setError(err instanceof Error ? err.message : "Something went wrong");
-          setAccountLinkCreatePending(false);
+          setIsLoading(false);
         });
     }
   }, [connectedAccountId]);
@@ -58,9 +58,9 @@ export default function RefreshPage() {
           <CardTitle className="text-2xl">College Advice</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <h2 className="text-xl font-semibold">Add information to start accepting money</h2>
+          <h2 className="text-xl font-semibold">Continuing your account setup</h2>
           <p className="text-muted-foreground">
-            College Advice partners with Stripe to help you receive payments while keeping your personal and bank details secure.
+            We&apos;re redirecting you back to complete your account setup.
           </p>
 
           {error && (
@@ -70,16 +70,10 @@ export default function RefreshPage() {
             </Alert>
           )}
 
-          {accountLinkCreatePending && !error && (
+          {isLoading && !error && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <p>Creating a new account link...</p>
-            </div>
-          )}
-
-          {connectedAccountId && (
-            <div className="bg-secondary p-4 rounded-md">
-              <p>Your connected account ID: <code className="font-bold">{connectedAccountId}</code></p>
+              <p>Preparing your onboarding form...</p>
             </div>
           )}
 
