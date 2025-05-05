@@ -19,8 +19,8 @@ export async function POST(req: Request) {
 
     const accountLink = await stripe.accountLinks.create({
       account,
-      refresh_url: `${origin}/booking/payment/refresh?account=${account}`,
-      return_url: `${origin}/booking/payment/return?account=${account}`,
+      refresh_url: `${origin}/booking/payment/refresh/${account}`,
+      return_url: `${origin}/booking/payment/return/${account}`,
       type: "account_onboarding",
     });
 
