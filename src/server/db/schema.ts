@@ -337,3 +337,26 @@ export const calendlyTokens = createTable("calendly_tokens", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const stripeAccounts = createTable(
+  "stripe_account",
+  {
+    id: serial("id").primaryKey(),
+    userId: varchar("user_id", { length: 255 })
+      .notNull()
+      .unique()
+      .references(() => users.id, { onDelete: "cascade" }),
+    stripeAccountId: varchar("stripe_account_id", { length: 255 })
+      .notNull()
+      .unique(), // e.g., acct_123...
+    onboardingComplete: boolean("onboarding_complete")
+      .notNull()
+      .default(false),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdIdx: index("stripe_account_user_id_idx").on(table.userId),
+    stripeAccountIdIdx: index("stripe_account_stripe_account_id_idx").on(table.stripeAccountId),
+  }),
+);
