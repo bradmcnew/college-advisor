@@ -24,7 +24,12 @@ export async function POST(req: Request) {
         env.STRIPE_WEBHOOK_SECRET
       );
     } catch (err) {
-      console.error("Webhook signature verification failed:", err);
+      const error = err as Error;
+      console.error("Webhook signature verification failed:", {
+        message: error.message,
+        signature: signature ?? "missing",
+        secretUsed: env.STRIPE_WEBHOOK_SECRET.substring(0, 10) + "..." // Just show first few chars
+      });
       return NextResponse.json({ error: "Webhook signature verification failed" }, { status: 400 });
     }
 
@@ -67,5 +72,5 @@ export async function POST(req: Request) {
 
 // Note: We need to disable Next.js body parsing for webhooks
 export const config = {
-  runtime: 'edge',
+  // Just use the empty default Next.js API route config
 };
