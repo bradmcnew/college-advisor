@@ -25,6 +25,7 @@ export const env = createEnv({
     SENDGRID_API_KEY: z.string(),
     CALENDLY_ID: z.string(),
     CALENDLY_SECRET: z.string(),
+    STRIPE_SECRET_KEY: z.string(),
   },
 
   /**
@@ -55,6 +56,7 @@ export const env = createEnv({
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
     CALENDLY_ID: process.env.CALENDLY_ID,
     CALENDLY_SECRET: process.env.CALENDLY_SECRET,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
