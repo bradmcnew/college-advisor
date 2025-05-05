@@ -68,8 +68,9 @@ export const postsRelations = relations(posts, ({ one }) => ({
 }));
 
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ many, one }) => ({
   accounts: many(accounts),
+  stripeAccount: one(stripeAccounts),
 }));
 
 export const accounts = createTable(
@@ -360,3 +361,7 @@ export const stripeAccounts = createTable(
     stripeAccountIdIdx: index("stripe_account_stripe_account_id_idx").on(table.stripeAccountId),
   }),
 );
+
+export const stripeAccountsRelations = relations(stripeAccounts, ({ one }) => ({
+  user: one(users, { fields: [stripeAccounts.userId], references: [users.id] }),
+}));

@@ -10,10 +10,9 @@ import {
   userMajors,
   majors,
   availability,
-  meetings,
-} from "~/server/db/schema"; // Adjust this import path to where your schema is defined
+} from "~/server/db/schema";
 import { eq, and, desc } from "drizzle-orm";
-import { DayAvailability, UserProfile } from "~/app/types";
+import type { DayAvailability } from "~/app/types";
 import { UTApi } from "uploadthing/server";
 
 export async function getPosts(limit = 20, offset = 0) {

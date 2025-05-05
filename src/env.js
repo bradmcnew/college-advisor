@@ -27,6 +27,7 @@ export const env = createEnv({
     CALENDLY_SECRET: z.string(),
     STRIPE_SECRET_KEY: z.string(),
     CRON_SECRET: z.string(),
+    STRIPE_WEBHOOK_SECRET: z.string(),
   },
 
   /**
@@ -59,6 +60,7 @@ export const env = createEnv({
     CALENDLY_SECRET: process.env.CALENDLY_SECRET,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     CRON_SECRET: process.env.CRON_SECRET,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
