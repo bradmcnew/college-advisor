@@ -12,6 +12,7 @@ import {
   uuid,
   date,
   pgTableCreator,
+  serial,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 import { timestamps } from "~/server/db/columns.helpers";
@@ -23,6 +24,21 @@ import { timestamps } from "~/server/db/columns.helpers";
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
 export const createTable = pgTableCreator((name) => `college-advice_${name}`);
+
+export const users = createTable("user", {
+  id: varchar("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID())
+    .unique(),
+  name: varchar("name", { length: 255 }),
+  email: varchar("email", { length: 255 }).unique(),
+  emailVerified: timestamp("email_verified", {
+    mode: "date",
+    withTimezone: true,
+  }).default(sql`CURRENT_TIMESTAMP`),
+  image: varchar("image", { length: 255 }),
+});
 
 export const posts = createTable(
   "post",
@@ -53,20 +69,6 @@ export const postsRelations = relations(posts, ({ one }) => ({
   creator: one(users, { fields: [posts.createdById], references: [users.id] }), // Link 'createdById' with 'users.id'
 }));
 
-export const users = createTable("user", {
-  id: varchar("id", { length: 255 })
-    .notNull()
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID())
-    .unique(),
-  name: varchar("name", { length: 255 }),
-  email: varchar("email", { length: 255 }).unique(),
-  emailVerified: timestamp("email_verified", {
-    mode: "date",
-    withTimezone: true,
-  }).default(sql`CURRENT_TIMESTAMP`),
-  image: varchar("image", { length: 255 }),
-});
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
@@ -170,7 +172,7 @@ export const userProfiles = createTable(
     ),
     checkConstraint: check(
       "grad_year_check",
-      sql`${table.graduationYear} >= ${new Date().getFullYear()}`,
+      sql`${table.graduationYear} >= EXTRACT(YEAR FROM CURRENT_DATE)`,
     ),
     userProfilesCompoundIdx: index("user_profiles_compound_idx").on(
       table.userId,
@@ -327,3 +329,13 @@ export const meetingsRelations = relations(meetings, ({ one }) => ({
   mentor: one(users, { fields: [meetings.mentorId], references: [users.id] }),
   mentee: one(users, { fields: [meetings.menteeId], references: [users.id] }),
 }));
+
+export const calendlyTokens = createTable("calendly_tokens", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id", { length: 255 }).notNull().unique().references(() => users.id, { onDelete: "cascade" }),
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

@@ -23,6 +23,8 @@ export const env = createEnv({
       .default("development"),
     JWT_SECRET: z.string(),
     SENDGRID_API_KEY: z.string(),
+    CALENDLY_ID: z.string(),
+    CALENDLY_SECRET: z.string(),
   },
 
   /**
@@ -51,6 +53,8 @@ export const env = createEnv({
     JWT_SECRET: process.env.JWT_SECRET,
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
+    CALENDLY_ID: process.env.CALENDLY_ID,
+    CALENDLY_SECRET: process.env.CALENDLY_SECRET,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
