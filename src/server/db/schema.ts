@@ -8,9 +8,7 @@ import {
   varchar,
   check,
   boolean,
-  time,
   uuid,
-  date,
   pgTableCreator,
   serial,
 } from "drizzle-orm/pg-core";

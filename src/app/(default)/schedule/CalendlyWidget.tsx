@@ -19,6 +19,11 @@ interface DayAvailability {
   slots: TimeSlot[];
 }
 
+interface CalendlyRule {
+  wday: string;
+  intervals: { from: string; to: string }[];
+}
+
 interface CalendlyWidgetProps {
   userId: string;
   hasCalendlyAccess: boolean;
@@ -64,21 +69,21 @@ export default function CalendlyWidget({ userId, hasCalendlyAccess }: CalendlyWi
           const weekday = currentDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
 
           // Find rule for this weekday
-          const rule = rules.find((r: any) => r.wday === weekday);
+          const rule = rules.find((r: CalendlyRule) => r.wday === weekday);
 
           if (rule?.intervals?.length) {
             // This day has availability slots
             const dateString = currentDate.toISOString().split('T')[0];
-            const slots: TimeSlot[] = rule.intervals.map((interval: any) => {
+            const slots: TimeSlot[] = rule.intervals.map((interval: { from: string; to: string }) => {
               // Convert from HH:MM to full ISO dates
               const [startHour, startMinute] = interval.from.split(':').map(Number);
               const [endHour, endMinute] = interval.to.split(':').map(Number);
 
               const startTime = new Date(currentDate);
-              startTime.setHours(startHour, startMinute, 0, 0);
+              startTime.setHours(startHour ?? 0, startMinute ?? 0, 0, 0);
 
               const endTime = new Date(currentDate);
-              endTime.setHours(endHour, endMinute, 0, 0);
+              endTime.setHours(endHour ?? 0, endMinute ?? 0, 0, 0);
 
               return {
                 start_time: startTime.toISOString(),
@@ -87,7 +92,7 @@ export default function CalendlyWidget({ userId, hasCalendlyAccess }: CalendlyWi
             });
 
             transformedData.push({
-              date: dateString,
+              date: dateString ?? "",
               slots: slots
             });
           }

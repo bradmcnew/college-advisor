@@ -84,7 +84,7 @@ export default function PaymentPage() {
             <>
               <h2 className="text-xl font-semibold">Get ready for take off</h2>
               <p className="text-muted-foreground">
-                College Advice is the world's leading college advising platform: join our team of advisors to help students navigate their college journey.
+                College Advice is the world&apos;s leading college advising platform: join our team of advisors to help students navigate their college journey.
               </p>
               <Button
                 onClick={handleCreateAccount}
