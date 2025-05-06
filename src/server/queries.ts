@@ -16,10 +16,6 @@ import type { DayAvailability } from "~/app/types";
 import { UTApi } from "uploadthing/server";
 
 export async function getPosts(limit = 20, offset = 0) {
-  const user = await auth();
-  if (!user?.userId) throw new Error("Unauthorized");
-
-  // Optimize select fields to only get what's needed
   const result = await db
     .select({
       post: {
@@ -69,12 +65,6 @@ export async function getPosts(limit = 20, offset = 0) {
 }
 
 export async function getPostById(id: number) {
-  const user = await auth();
-
-  if (!user || !user.userId) {
-    throw new Error("Unauthorized");
-  }
-
   try {
     const post = await db
       .select({
@@ -167,9 +157,6 @@ export async function getPostsByFilters(
   limit = 20,
   offset = 0,
 ) {
-  const user = await auth();
-  if (!user?.userId) throw new Error("Unauthorized");
-
   // Return all posts if no filters
   if ([schoolId, majorId, graduationYear].every((f) => f === -1)) {
     return getPosts(limit, offset);
@@ -240,12 +227,8 @@ export async function getPostsByFilters(
 export const getProfilePic = async () => {
   const user = await auth();
 
-  if (!user || !user.userId) {
-    throw new Error("Unauthorized");
-  }
-
   const userImage = await db.query.users.findFirst({
-    where: (model, { eq }) => eq(model.id, user.userId),
+    where: (model, { eq }) => eq(model.id, user!.userId),
   });
 
   return userImage?.image;
@@ -253,10 +236,9 @@ export const getProfilePic = async () => {
 
 export const getProfile = async () => {
   const user = await auth();
-  if (!user?.userId) throw new Error("Unauthorized");
 
   const profile = await db.query.userProfiles.findFirst({
-    where: (model, { eq }) => eq(model.userId, user.userId),
+    where: (model, { eq }) => eq(model.userId, user!.userId),
   });
 
   return profile;
@@ -264,10 +246,9 @@ export const getProfile = async () => {
 
 export const getProfileWithImage = async () => {
   const user = await auth();
-  if (!user?.userId) throw new Error("Unauthorized");
 
   const profile = await db.query.userProfiles.findFirst({
-    where: (model, { eq }) => eq(model.userId, user.userId),
+    where: (model, { eq }) => eq(model.userId, user!.userId),
     with: {
       user: {
         columns: {
@@ -281,9 +262,6 @@ export const getProfileWithImage = async () => {
 };
 
 export const deleteUTImage = async (image: string) => {
-  const user = await auth();
-  if (!user?.userId) throw new Error("Unauthorized");
-
   const utapi = new UTApi();
   const fileKey = image.split("https://utfs.io/f/")[1];
   if (fileKey) {
@@ -303,7 +281,7 @@ export const updateProfileWithImage = async ({
   image: string | null;
 }) => {
   const user = await auth();
-  if (!user?.userId) throw new Error("Unauthorized");
+
 
   await db
     .update(userProfiles)
@@ -317,11 +295,11 @@ export const updateProfileWithImage = async ({
         | "Graduate",
       graduationYear: graduationYear,
     })
-    .where(eq(userProfiles.userId, user.userId));
+    .where(eq(userProfiles.userId, user!.userId));
 
   if (image) {
     const oldImage = await db.query.users.findFirst({
-      where: (model, { eq }) => eq(model.id, user.userId),
+      where: (model, { eq }) => eq(model.id, user!.userId),
     });
     // delete old image from uploadthing
     if (oldImage?.image) {
@@ -334,7 +312,7 @@ export const updateProfileWithImage = async ({
       .set({
         image: image,
       })
-      .where(eq(users.id, user.userId));
+      .where(eq(users.id, user!.userId));
   }
 };
 
@@ -343,9 +321,6 @@ export const updateProfileWithImage = async ({
  * @param payload Array of availability objects to be inserted.
  */
 export const setAvailability = async (payload: DayAvailability[]) => {
-  const user = await auth();
-  if (!user?.userId) throw new Error("Unauthorized");
-
   await db.insert(availability).values(payload);
 };
 
@@ -354,9 +329,6 @@ export const setAvailability = async (payload: DayAvailability[]) => {
  * @param mentorId The ID of the mentor.
  */
 export const deleteAvailability = async (mentorId: string) => {
-  const user = await auth();
-  if (!user?.userId) throw new Error("Unauthorized");
-
   await db.delete(availability).where(eq(availability.mentorId, mentorId));
 };
 
