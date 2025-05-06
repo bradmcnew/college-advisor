@@ -43,9 +43,8 @@ export default function PaymentPage() {
     }
   };
 
-
   return (
-    <div className="container py-8">
+    <div className="min-h-screen flex items-center justify-center">
       <Card className="max-w-3xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl">College Advice</CardTitle>
@@ -62,7 +61,7 @@ export default function PaymentPage() {
                 disabled={accountCreatePending}
                 className="w-full sm:w-auto"
               >
-                {accountCreatePending ? "Creating account..." : "Create an account!"}
+                {accountCreatePending ? "Processing..." : "Set up payments"}
               </Button>
             </>
           ) : (

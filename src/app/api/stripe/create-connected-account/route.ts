@@ -20,10 +20,12 @@ export async function POST() {
     // Check if the user already has a Stripe account
     const existingAccount = await getStripeAccountByUserId(session.user.id);
     let accountId;
+    let isExisting = false;
 
     if (existingAccount) {
       // User already has an account, use the existing one
       accountId = existingAccount.stripeAccountId;
+      isExisting = true;
     } else {
       // Create a new Stripe connected account
       const account = await stripe.accounts.create({
@@ -61,7 +63,8 @@ export async function POST() {
     // Return both the account ID and the onboarding URL
     return NextResponse.json({
       account: accountId,
-      url: accountLink.url
+      url: accountLink.url,
+      isExisting,
     });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
