@@ -1,21 +1,16 @@
-import { redirect } from "next/navigation";
-import { auth } from "~/server/auth";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
 import CalendlyWidget from "./CalendlyWidget";
 import { db } from "~/server/db";
 import { calendlyTokens } from "~/server/db/schema";
 import { eq } from "drizzle-orm";
+import { requireAuth } from "~/lib/auth-utils";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function SchedulePage() {
-  const user = await auth();
-
-  if (!user) {
-    redirect("/");
-  }
+  const user = await requireAuth();
 
   // Check if user has connected their Calendly account
   const userToken = await db.query.calendlyTokens.findFirst({

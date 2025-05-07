@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { auth } from "~/server/auth";
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import {
@@ -14,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import ImageUploader from "~/app/(default)/profile/edit/ImageUploader";
 import StatusToast from "~/app/components/StatusToast";
 import { getProfileWithImage, updateProfileWithImage } from "~/server/queries";
+import { requireAuth } from "~/lib/auth-utils";
 
 // EditProfileProps Interface
 interface EditProfileProps {
@@ -23,12 +23,7 @@ interface EditProfileProps {
 export default async function EditProfilePage({
   searchParams,
 }: EditProfileProps) {
-  const session = await auth();
-
-  // Redirect unauthenticated users to the homepage
-  if (!session) {
-    redirect("/");
-  }
+  await requireAuth();
 
   const userProfile = await getProfileWithImage();
 
@@ -92,9 +87,15 @@ export default async function EditProfilePage({
       });
       // Redirect to the edit profile page upon successful update
       redirect("/profile/view");
-    } catch (error: any) {
+    } catch (error: unknown) {
       // If the error is a NEXT_REDIRECT, rethrow it to allow Next.js to handle the redirect
-      if (error.digest && error.digest.startsWith("NEXT_REDIRECT")) {
+      if (
+        typeof error === "object" &&
+        error &&
+        "digest" in error &&
+        typeof error.digest === "string" &&
+        error.digest.startsWith("NEXT_REDIRECT")
+      ) {
         throw error;
       }
       console.error("Error during profile update:", error);

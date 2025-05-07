@@ -1,30 +1,17 @@
 import "~/styles/globals.css";
 
-import { NavBarBase } from "~/app/components/navbar/NavigationClient";
-import { getProfilePic } from "~/server/queries";
-import { auth } from "~/server/auth";
+import { NavBar } from "~/app/components/navbar/NavBar";
+import { Suspense } from "react";
 
 export default async function RootLayout({
   children,
   modal,
 }: Readonly<{ children: React.ReactNode; modal: React.ReactNode }>) {
-  let profilePic = "";
-  let isAuthenticated = false;
-
-  try {
-    const session = await auth();
-
-    if (session) {
-      isAuthenticated = true;
-      profilePic = (await getProfilePic()) ?? "";
-    }
-  } catch (error) {
-    console.error("Error fetching profile pic:", error);
-  }
-
   return (
     <>
-      {isAuthenticated && <NavBarBase profilePic={profilePic} />}
+      <Suspense fallback={<div className="h-16 bg-background" />}>
+        <NavBar />
+      </Suspense>
       {children}
       {modal}
       <div id="modal-root" />

@@ -28,6 +28,11 @@ export const env = createEnv({
     STRIPE_SECRET_KEY: z.string(),
     CRON_SECRET: z.string(),
     STRIPE_WEBHOOK_SECRET: z.string(),
+    NEXTAUTH_URL: z.string(),
+    SMTP_HOST: z.string(),
+    SMTP_PORT: z.coerce.number(),
+    SMTP_USER: z.string(),
+    SMTP_PASS: z.string(),
   },
 
   /**
@@ -61,6 +66,11 @@ export const env = createEnv({
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     CRON_SECRET: process.env.CRON_SECRET,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    SMTP_HOST: process.env.SMTP_HOST,
+    SMTP_PORT: process.env.SMTP_PORT,
+    SMTP_USER: process.env.SMTP_USER,
+    SMTP_PASS: process.env.SMTP_PASS,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

@@ -2,11 +2,11 @@ import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { redirect } from "next/navigation";
-import { auth } from "~/server/auth";
 import jwt from "jsonwebtoken";
 import { env } from "~/env";
 import sgMail from '@sendgrid/mail'
 import { db } from "~/server/db";
+import { requireAuth } from "~/lib/auth-utils";
 
 interface EmailInputFormProps {
   message?: string;
@@ -17,11 +17,7 @@ interface EmailInputFormProps {
 export default async function EmailInputForm({
   isVerified = false,
 }: EmailInputFormProps) {
-  const session = await auth();
-
-  if (!session) {
-    redirect("/");
-  }
+  const session = await requireAuth();
 
   const handleSubmit = async (formData: FormData) => {
     "use server";
@@ -50,7 +46,7 @@ export default async function EmailInputForm({
     try {
       // Generate a verification token
       const token = jwt.sign(
-        { userId: session.userId, eduEmail: lowerCaseEduEmail },
+        { userId: session!.user.id, eduEmail: lowerCaseEduEmail },
         env.JWT_SECRET,
         { expiresIn: "10m" },
       );
@@ -66,7 +62,7 @@ export default async function EmailInputForm({
         from: env.AUTH_EMAIL_FROM,
         subject: "Verify Your College Email to Become a Mentor",
         html: `
-          <p>Hi ${session.user.name || "there"},</p>
+          <p>Hi ${session!.user.name || "there"},</p>
           <p>Thank you for your interest in becoming a mentor at College Advice.</p>
           <p>Please verify your college email by clicking the link below:</p>
           <a href="${verifyUrl}">Verify Email</a>
@@ -79,9 +75,15 @@ export default async function EmailInputForm({
 
       // Redirect to the success page
       redirect("/email-verification?status=sent");
-    } catch (error: any) {
-      // If the error is a NEXT_REDIRECT, rethrow it to allow Next.js to handle the redirect
-      if (error.digest && error.digest.startsWith("NEXT_REDIRECT")) {
+    } catch (error: unknown) {
+      // If the error is a NEXT_REDIRECT, rethrow it
+      if (
+        typeof error === "object" &&
+        error &&
+        "digest" in error &&
+        typeof error.digest === "string" &&
+        error.digest.startsWith("NEXT_REDIRECT")
+      ) {
         throw error;
       }
 

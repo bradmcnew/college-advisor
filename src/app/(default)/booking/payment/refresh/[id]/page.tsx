@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 
-export default function RefreshPage() {
+export default function RefreshClient() {
   const params = useParams();
   const connectedAccountId = params.id as string;
 

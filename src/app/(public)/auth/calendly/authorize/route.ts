@@ -1,15 +1,12 @@
-import { auth } from "~/server/auth";
 import { env } from "~/env";
+import { requireServerAuth } from "~/lib/auth-utils";
 
 const CALENDLY_ID = env.CALENDLY_ID;
 const REDIRECT_URI = env.NEXT_PUBLIC_BASE_URL + "/auth/calendly/callback";
 
 export async function GET() {
   // Get the current user
-  const session = await auth();
-  if (!session?.user) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const session = await requireServerAuth();
 
   // Redirect to Calendly authorization page
   const authUrl = new URL("https://auth.calendly.com/oauth/authorize");

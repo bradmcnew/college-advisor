@@ -1,11 +1,17 @@
 import { db } from "~/server/db";
 import { calendlyTokens } from "~/server/db/schema";
 import { eq } from "drizzle-orm";
+import { requireServerAuth } from "~/lib/auth-utils";
 
 const CALENDLY_CLIENT_ID = process.env.CALENDLY_CLIENT_ID!;
 const CALENDLY_CLIENT_SECRET = process.env.CALENDLY_CLIENT_SECRET!;
 
 export async function getValidAccessToken(userId: string) {
+  const { userId: sessionUserId }  = await requireServerAuth();
+  if (sessionUserId !== userId) {
+    throw new Error("User does not have access to this resource");
+  }
+
   // Get the user's tokens
   const userTokens = await db.query.calendlyTokens.findFirst({
     where: eq(calendlyTokens.userId, userId),

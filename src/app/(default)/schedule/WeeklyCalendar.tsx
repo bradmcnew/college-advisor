@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, Fragment } from "react";
 import { Label } from "~/components/ui/label";
-import { TimeRange } from "~/app/types";
+import type { TimeRange } from "~/app/types";
 import LoadingSpinner from "~/app/components/LoadingSpinner";
 
 /**

@@ -2,8 +2,11 @@ import { env } from "~/env";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { stripe } from "~/lib/server-utils";
+import { requireServerAuth } from "~/lib/auth-utils";
 
 export async function POST(req: Request) {
+  await requireServerAuth();
+
   try {
     const { account } = await req.json();
 

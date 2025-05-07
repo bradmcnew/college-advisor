@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { Toast } from "../types";
+import type { Toast } from "~/app/types";
 
 interface StatusToastProps {
   status: string | null;
@@ -12,7 +12,7 @@ export default function StatusToast({ status }: StatusToastProps) {
   useEffect(() => {
     if (!status) return;
 
-    let toastContent: Toast = {
+    const toastContent: Toast = {
       title: "",
       description: "",
       variant: "success",

@@ -2,12 +2,15 @@ import { getPostById } from "~/server/queries";
 import Image from "next/image";
 import { Modal } from "~/app/(default)/@modal/(.)img/[id]/modal";
 import Link from "next/link";
+import { requireAuth } from "~/lib/auth-utils";
 
 export default async function PostModal({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAuth();
+
   const { id: postId } = await params;
   const idAsNumber = Number(postId);
 

@@ -9,11 +9,9 @@ import type Stripe from "stripe";
  * Stripe webhook handler
  */
 export async function POST(req: Request) {
-  console.log("====== Stripe Webhook Received ======");
   try {
     const body = await req.text();
     const signature = (await headers()).get("stripe-signature");
-    console.log("Stripe-Signature:", signature ? "Present" : "Missing");
 
     // Verify webhook signature
     let event;
@@ -24,13 +22,7 @@ export async function POST(req: Request) {
         env.STRIPE_WEBHOOK_SECRET
       );
     } catch (err) {
-      const error = err as Error;
-      console.error("Webhook signature verification failed:", {
-        message: error.message,
-        signature: signature ?? "missing",
-        secretUsed: env.STRIPE_WEBHOOK_SECRET.substring(0, 10) + "..." // Just show first few chars
-      });
-      return NextResponse.json({ error: "Webhook signature verification failed" }, { status: 400 });
+      return NextResponse.json({ error: "Webhook signature verification failed: " + err }, { status: 400 });
     }
 
     // Handle specific events

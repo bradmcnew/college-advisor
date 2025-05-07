@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { stripe } from "~/lib/server-utils";
-import { auth } from "~/server/auth";
 import { createStripeAccount, getStripeAccountByUserId } from "../stripe-utils";
 import { env } from "~/env";
 import { headers } from "next/headers";
+import { requireServerAuth } from "~/lib/auth-utils";
 
 /**
  * Creates a Stripe connected account and returns an account link URL
@@ -11,14 +11,10 @@ import { headers } from "next/headers";
  */
 export async function POST() {
   try {
-    const session = await auth();
-
-    if (!session || !session.user.id) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
-    }
+    const session = await requireServerAuth();
 
     // Check if the user already has a Stripe account
-    const existingAccount = await getStripeAccountByUserId(session.user.id);
+    const existingAccount = await getStripeAccountByUserId(session!.user.id);
     let accountId;
     let isExisting = false;
 
@@ -45,7 +41,7 @@ export async function POST() {
       });
 
       // Save the account in our database
-      await createStripeAccount(session.user.id, account.id);
+      await createStripeAccount(session!.user.id, account.id);
       accountId = account.id;
     }
 

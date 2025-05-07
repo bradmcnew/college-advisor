@@ -3,8 +3,11 @@ import Image from "next/image";
 import type { Card } from "~/app/types";
 import { getPostById } from "~/server/queries";
 import { notFound } from "next/navigation";
+import { requireAuth } from "~/lib/auth-utils";
 
 export default async function PostPage({ id }: { id: string }) {
+  await requireAuth();
+
   const postId = Number(id);
 
   if (Number.isNaN(postId)) {

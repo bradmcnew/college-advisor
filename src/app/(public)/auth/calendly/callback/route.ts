@@ -2,12 +2,14 @@ import { type NextRequest } from "next/server";
 import { db } from "~/server/db";
 import { env } from "~/env";
 import { calendlyTokens } from "~/server/db/schema";
+import { requireServerAuth } from "~/lib/auth-utils";
 
 const CALENDLY_ID = env.CALENDLY_ID;
 const CALENDLY_SECRET = env.CALENDLY_SECRET;
 const REDIRECT_URI = env.NEXT_PUBLIC_BASE_URL + "/auth/calendly/callback";
 
 export async function GET(request: NextRequest) {
+  await requireServerAuth();
   // Extract code and state from URL
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");

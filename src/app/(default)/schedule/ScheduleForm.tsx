@@ -105,7 +105,7 @@ export default function ScheduleForm({
       toast.success("Success", {
         description: "Your availability has been updated.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error submitting availability:", error);
       toast.error("Error", {
         description:

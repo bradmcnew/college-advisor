@@ -1,20 +1,14 @@
 import { redirect } from "next/navigation";
-import { auth } from "~/server/auth";
-import { db } from "~/server/db";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
-import { UserProfile } from "~/app/types";
 import { getProfileWithImage } from "~/server/queries";
+import { requireAuth } from "~/lib/auth-utils";
 
 export default async function ViewProfilePage() {
-  const session = await auth();
-
-  if (!session) {
-    redirect("/");
-  }
+  await requireAuth();
 
   try {
     const userProfile = await getProfileWithImage();
@@ -102,8 +96,14 @@ export default async function ViewProfilePage() {
         </Button>
       </>
     );
-  } catch (error: any) {
-    if (error.digest && error.digest.startsWith("NEXT_REDIRECT")) {
+  } catch (error: unknown) {
+    if (
+      typeof error === "object" &&
+      error &&
+      "digest" in error &&
+      typeof error.digest === "string" &&
+      error.digest.startsWith("NEXT_REDIRECT")
+    ) {
       throw error;
     }
     console.error("Error fetching profile:", error);

@@ -1,5 +1,3 @@
-import { auth } from "~/server/auth";
-import { LoginPage } from "~/app/components/Login";
 import { getMajors, getSchools } from "~/server/queries";
 import { FilterButton } from "~/app/components/FilterButton";
 import { PostGrid } from "~/app/(default)/(dashboard)/PostGrid";
@@ -14,21 +12,14 @@ import {
   fetchPostsAction,
   fetchPostsByFilterAction,
 } from "~/app/(default)/(dashboard)/actions";
+import { requireAuth } from "~/lib/auth-utils";
 
 export default async function HomePage({
   searchParams,
 }: {
   searchParams: { school?: string; major?: string; gradYear?: string };
 }) {
-  const session = await auth();
-
-  if (!session) {
-    return (
-      <main className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-100 via-sky-100 to-gray-100 dark:from-gray-950 dark:via-slate-900 dark:to-gray-950">
-        <LoginPage />
-      </main>
-    );
-  }
+  await requireAuth();
 
   const params = await searchParams;
 
