@@ -42,18 +42,37 @@ export async function GET(request: NextRequest) {
 
     const tokenData = await tokenResponse.json();
 
-    // Store tokens in database
+    // Fetch user details from Calendly
+    const userResponse = await fetch("https://api.calendly.com/users/me", {
+      headers: {
+        Authorization: `Bearer ${tokenData.access_token}`,
+      },
+    });
+
+    let calendlyName = null;
+    let calendlyEmail = null;
+    if (userResponse.ok) {
+      const userData = await userResponse.json();
+      calendlyName = userData.resource.name;
+      calendlyEmail = userData.resource.email;
+    }
+
+    // Store tokens and user info in database
     await db.insert(calendlyTokens).values({
       userId: state,
       accessToken: tokenData.access_token,
       refreshToken: tokenData.refresh_token,
       expiresAt: new Date(Date.now() + tokenData.expires_in * 1000),
+      calendlyName,
+      calendlyEmail,
     }).onConflictDoUpdate({
       target: [calendlyTokens.userId],
       set: {
         accessToken: tokenData.access_token,
         refreshToken: tokenData.refresh_token,
         expiresAt: new Date(Date.now() + tokenData.expires_in * 1000),
+        calendlyName,
+        calendlyEmail,
         updatedAt: new Date(),
       }
     });

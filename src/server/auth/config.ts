@@ -1,7 +1,7 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import EmailProvider from "next-auth/providers/nodemailer";
+// import EmailProvider from "next-auth/providers/nodemailer";
 import DiscordProvider from "next-auth/providers/discord";
 import { env } from "~/env";
 

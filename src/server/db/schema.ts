@@ -335,6 +335,8 @@ export const calendlyTokens = createTable("calendly_tokens", {
   accessToken: text("access_token").notNull(),
   refreshToken: text("refresh_token").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
+  calendlyName: varchar("calendly_name", { length: 255 }),
+  calendlyEmail: varchar("calendly_email", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
