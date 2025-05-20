@@ -78,7 +78,7 @@ export const authConfig = {
   },
   cookies: {
     sessionToken: {
-      name: "next-auth.session-token",
+      name: "__Secure-authjs.session-token",
       options: {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",

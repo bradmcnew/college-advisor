@@ -18,7 +18,6 @@ import { requireServerAuth } from "~/lib/auth-utils";
 export async function getPosts(limit = 20, offset = 0) {
   requireServerAuth();
 
-
   const result = await db
     .select({
       post: {
