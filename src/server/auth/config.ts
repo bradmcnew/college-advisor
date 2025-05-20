@@ -80,13 +80,11 @@ export const authConfig = {
   },
   cookies: {
     sessionToken: {
-      name: isProd
-        ? "__Secure-authjs.session-token"
-        : "next-auth.session-token",
+      name: "next-auth.session-token",
       options: {
         httpOnly: true,
         secure: isProd,
-        sameSite: "lax",
+        sameSite: isProd ? "none" : "lax",
         path: "/",
         ...(isProd && { domain: env.NEXTAUTH_COOKIE_DOMAIN }),
       },
