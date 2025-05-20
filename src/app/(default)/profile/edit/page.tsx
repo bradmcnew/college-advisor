@@ -23,9 +23,9 @@ interface EditProfileProps {
 export default async function EditProfilePage({
   searchParams,
 }: EditProfileProps) {
-  await requireAuth();
+  const { userId } = await requireAuth();
 
-  const userProfile = await getProfileWithImage();
+  const userProfile = await getProfileWithImage(userId);
 
   // If the user is not a mentor or their .edu email is not verified, redirect them
   if (!userProfile?.isMentor || !userProfile.isEduVerified) {
@@ -79,7 +79,7 @@ export default async function EditProfilePage({
 
     try {
       // Update the userProfiles table with the additional information
-      await updateProfileWithImage({
+      await updateProfileWithImage(userId, {
         bio,
         schoolYear,
         graduationYear,

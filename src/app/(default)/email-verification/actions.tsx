@@ -4,9 +4,9 @@ import { requireAuth } from "~/lib/auth-utils";
 import { getProfile } from "~/server/queries";
 
 export async function checkVerificationStatus(): Promise<boolean> {
-  await requireAuth();
+  const { userId } = await requireAuth();
 
-  const userProfile = await getProfile();
+  const userProfile = await getProfile(userId);
 
   return userProfile?.isEduVerified ?? false;
 }

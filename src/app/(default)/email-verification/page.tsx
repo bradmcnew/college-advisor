@@ -11,12 +11,12 @@ interface EmailVerificationPageProps {
 export default async function EmailVerificationPage({
   searchParams,
 }: EmailVerificationPageProps) {
-  await requireAuth();
+  const { userId } = await requireAuth();
 
   const { status } = await searchParams;
 
   // Fetch the user's profile to determine if they have an existing eduEmail
-  const isVerified = (await getProfile())?.isEduVerified;
+  const isVerified = (await getProfile(userId))?.isEduVerified;
 
   // Render the SentEmailVerification component if the status is 'sent'
   if (status === "sent") {

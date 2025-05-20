@@ -8,10 +8,10 @@ import { getProfileWithImage } from "~/server/queries";
 import { requireAuth } from "~/lib/auth-utils";
 
 export default async function ViewProfilePage() {
-  await requireAuth();
+  const { userId } = await requireAuth();
 
   try {
-    const userProfile = await getProfileWithImage();
+    const userProfile = await getProfileWithImage(userId);
 
     if (!userProfile?.isMentor || !userProfile.isEduVerified) {
       redirect("/email-verification");

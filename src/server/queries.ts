@@ -16,7 +16,7 @@ import { UTApi } from "uploadthing/server";
 import { requireServerAuth } from "~/lib/auth-utils";
 
 export async function getPosts(limit = 20, offset = 0) {
-  requireServerAuth();
+  await requireServerAuth();
 
   const result = await db
     .select({
@@ -67,7 +67,7 @@ export async function getPosts(limit = 20, offset = 0) {
 }
 
 export async function getPostById(id: number) {
-  requireServerAuth();
+  await requireServerAuth();
 
   try {
     const post = await db
@@ -129,7 +129,7 @@ export async function getPostById(id: number) {
 }
 
 export const getSchools = async () => {
-  requireServerAuth();
+  await requireServerAuth();
 
   const schools = await db.query.schools.findMany();
   const res: { value: string; label: string; id: number }[] = schools.map(
@@ -144,7 +144,7 @@ export const getSchools = async () => {
 };
 
 export const getMajors = async () => {
-  requireServerAuth();
+  await requireServerAuth();
 
   const majors = await db.query.majors.findMany();
   const res: { value: string; label: string; id: number }[] = majors.map(
@@ -165,7 +165,7 @@ export async function getPostsByFilters(
   limit = 20,
   offset = 0,
 ) {
-  requireServerAuth();
+  await requireServerAuth();
 
   // Return all posts if no filters
   if ([schoolId, majorId, graduationYear].every((f) => f === -1)) {
@@ -234,31 +234,31 @@ export async function getPostsByFilters(
   }));
 }
 
-export const getProfilePic = async () => {
-  const session = await requireServerAuth();
+export const getProfilePic = async (userId: string) => {
+  await requireServerAuth();
 
   const userImage = await db.query.users.findFirst({
-    where: (model, { eq }) => eq(model.id, session.userId),
+    where: (model, { eq }) => eq(model.id, userId),
   });
 
   return userImage?.image;
 };
 
-export const getProfile = async () => {
-  const session = await requireServerAuth();
+export const getProfile = async (userId: string) => {
+  await requireServerAuth();
 
   const profile = await db.query.userProfiles.findFirst({
-    where: (model, { eq }) => eq(model.userId, session.userId),
+    where: (model, { eq }) => eq(model.userId, userId),
   });
 
   return profile;
 };
 
-export const getProfileWithImage = async () => {
-  const session = await requireServerAuth();
+export const getProfileWithImage = async (userId: string) => {
+  await requireServerAuth();
 
   const profile = await db.query.userProfiles.findFirst({
-    where: (model, { eq }) => eq(model.userId, session.userId),
+    where: (model, { eq }) => eq(model.userId, userId),
     with: {
       user: {
         columns: {
@@ -272,7 +272,7 @@ export const getProfileWithImage = async () => {
 };
 
 export const deleteUTImage = async (image: string) => {
-  requireServerAuth();
+  await requireServerAuth();
 
   const utapi = new UTApi();
   const fileKey = image.split("https://utfs.io/f/")[1];
@@ -281,18 +281,21 @@ export const deleteUTImage = async (image: string) => {
   }
 };
 
-export const updateProfileWithImage = async ({
-  bio,
-  schoolYear,
-  graduationYear,
-  image,
-}: {
-  bio: string;
-  schoolYear: string;
-  graduationYear: number;
-  image: string | null;
-}) => {
-  const session = await requireServerAuth();
+export const updateProfileWithImage = async (
+  userId: string,
+  {
+    bio,
+    schoolYear,
+    graduationYear,
+    image,
+  }: {
+    bio: string;
+    schoolYear: string;
+    graduationYear: number;
+    image: string | null;
+  },
+) => {
+  await requireServerAuth();
 
   await db
     .update(userProfiles)
@@ -306,11 +309,11 @@ export const updateProfileWithImage = async ({
         | "Graduate",
       graduationYear: graduationYear,
     })
-    .where(eq(userProfiles.userId, session.userId));
+    .where(eq(userProfiles.userId, userId));
 
   if (image) {
     const oldImage = await db.query.users.findFirst({
-      where: (model, { eq }) => eq(model.id, session.userId),
+      where: (model, { eq }) => eq(model.id, userId),
     });
     // delete old image from uploadthing
     if (oldImage?.image) {
@@ -323,7 +326,7 @@ export const updateProfileWithImage = async ({
       .set({
         image: image,
       })
-      .where(eq(users.id, session.userId));
+      .where(eq(users.id, userId));
   }
 };
 
@@ -332,7 +335,7 @@ export const updateProfileWithImage = async ({
  * @param payload Array of availability objects to be inserted.
  */
 export const setAvailability = async (payload: DayAvailability[]) => {
-  requireServerAuth();
+  await requireServerAuth();
 
   await db.insert(availability).values(payload);
 };
@@ -342,13 +345,14 @@ export const setAvailability = async (payload: DayAvailability[]) => {
  * @param mentorId The ID of the mentor.
  */
 export const deleteAvailability = async (mentorId: string) => {
-  requireServerAuth();
+  await requireServerAuth();
 
   await db.delete(availability).where(eq(availability.mentorId, mentorId));
 };
 
 export const getAvailability = async (mentorId: string) => {
-  requireServerAuth();
+  await requireServerAuth();
+
   const availabilities = await db
     .select()
     .from(availability)

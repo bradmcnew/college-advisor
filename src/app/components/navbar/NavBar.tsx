@@ -4,9 +4,9 @@ import { cache } from "react";
 import { requireAuth } from "~/lib/auth-utils";
 
 // Cache the profile pic fetch to avoid repeated DB calls
-const getProfilePicCached = cache(async () => {
+const getProfilePicCached = cache(async (userId: string) => {
   try {
-    return (await getProfilePic()) ?? "";
+    return (await getProfilePic(userId)) ?? "";
   } catch (error) {
     console.error("Error fetching profile pic:", error);
     return "";
@@ -14,8 +14,8 @@ const getProfilePicCached = cache(async () => {
 });
 
 export async function NavBar() {
-  await requireAuth();
-  const profilePic = await getProfilePicCached();
+  const { userId } = await requireAuth();
+  const profilePic = await getProfilePicCached(userId);
 
   return <NavBarBase profilePic={profilePic} />;
 }
