@@ -91,5 +91,5 @@ export const authConfig = {
       },
     }),
   },
-  secret: env.AUTH_SECRET,
+  secret: env.NEXTAUTH_SECRET,
 } satisfies NextAuthConfig;

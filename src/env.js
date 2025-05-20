@@ -7,7 +7,7 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
-    AUTH_SECRET:
+    NEXTAUTH_SECRET:
       process.env.NODE_ENV === "production"
         ? z.string()
         : z.string().optional(),
@@ -33,6 +33,12 @@ export const env = createEnv({
     SMTP_PORT: z.coerce.number(),
     SMTP_USER: z.string(),
     SMTP_PASS: z.string(),
+    CAL_COM_API_URL: z.string(),
+    CAL_COM_UI_URL: z.string(),
+    CAL_COM_OAUTH_CLIENT_ID: z.string(),
+    CAL_COM_SECRET_KEY: z.string(),
+    EMAIL_FROM: z.string(),
+    SENTRY_AUTH_TOKEN: z.string(),
   },
 
   /**
@@ -49,7 +55,7 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
-    AUTH_SECRET: process.env.AUTH_SECRET,
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     AUTH_DISCORD_ID: process.env.AUTH_DISCORD_ID,
     AUTH_DISCORD_SECRET: process.env.AUTH_DISCORD_SECRET,
     AUTH_GOOGLE_ID: process.env.AUTH_GOOGLE_ID,
@@ -71,6 +77,12 @@ export const env = createEnv({
     SMTP_PORT: process.env.SMTP_PORT,
     SMTP_USER: process.env.SMTP_USER,
     SMTP_PASS: process.env.SMTP_PASS,
+    CAL_COM_API_URL: process.env.CAL_COM_API_URL,
+    CAL_COM_UI_URL: process.env.CAL_COM_UI_URL,
+    CAL_COM_OAUTH_CLIENT_ID: process.env.CAL_COM_OAUTH_CLIENT_ID,
+    CAL_COM_SECRET_KEY: process.env.CAL_COM_SECRET_KEY,
+    EMAIL_FROM: process.env.EMAIL_FROM,
+    SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
