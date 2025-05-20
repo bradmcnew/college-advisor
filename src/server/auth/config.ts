@@ -75,8 +75,9 @@ export const authConfig = {
      */
   ],
   session: {
-    maxAge: 2 * 60 * 60, // 2 hours
-    updateAge: 30 * 60, // 30 minutes
+    strategy: "jwt",
+    maxAge: 2 * 60 * 60,
+    updateAge: 30 * 60,
   },
   cookies: {
     sessionToken: {
