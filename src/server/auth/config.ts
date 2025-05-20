@@ -84,7 +84,7 @@ export const authConfig = {
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        domain: env.SESSION_COOKIE_DOMAIN,
+        domain: env.NEXTAUTH_COOKIE_DOMAIN,
       },
     },
   },
