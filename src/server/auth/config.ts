@@ -80,7 +80,7 @@ export const authConfig = {
   },
   cookies: {
     sessionToken: {
-      name: "next-auth.session-token",
+      name: `${isProd ? "__Secure-" : ""}next-auth.session-token`,
       options: {
         httpOnly: true,
         secure: isProd,
@@ -97,19 +97,12 @@ export const authConfig = {
     verificationTokensTable: verificationTokens,
   }),
   callbacks: {
-    session: ({
-      session,
-      user,
-    }: {
-      session: DefaultSession;
-      user: { id: string };
-    }) => ({
+    session: ({ session, user }: { session: DefaultSession; user: {id: string }}) => ({
       ...session,
       user: {
         ...session.user,
         id: user.id,
       },
-      userId: user.id,
     }),
   },
   secret: env.NEXTAUTH_SECRET,
