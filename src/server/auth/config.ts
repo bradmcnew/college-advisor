@@ -35,6 +35,8 @@ declare module "next-auth" {
   // }
 }
 
+const isProd = process.env.NODE_ENV === "production";
+
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -78,13 +80,15 @@ export const authConfig = {
   },
   cookies: {
     sessionToken: {
-      name: "__Secure-authjs.session-token",
+      name: isProd
+        ? "__Secure-authjs.session-token"
+        : "next-auth.session-token",
       options: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: isProd,
         sameSite: "lax",
         path: "/",
-        domain: env.NEXTAUTH_COOKIE_DOMAIN,
+        ...(isProd && { domain: env.NEXTAUTH_COOKIE_DOMAIN }),
       },
     },
   },

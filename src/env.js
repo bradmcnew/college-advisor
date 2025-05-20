@@ -1,16 +1,15 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
+const isProd = process.env.NODE_ENV === "production";
+
 export const env = createEnv({
   /**
    * Specify your server-side environment variables schema here. This way you can ensure the app
    * isn't built with invalid env vars.
    */
   server: {
-    NEXTAUTH_SECRET:
-      process.env.NODE_ENV === "production"
-        ? z.string()
-        : z.string().optional(),
+    NEXTAUTH_SECRET: isProd ? z.string() : z.string().optional(),
     AUTH_DISCORD_ID: z.string(),
     AUTH_DISCORD_SECRET: z.string(),
     AUTH_GOOGLE_ID: z.string(),
@@ -35,7 +34,7 @@ export const env = createEnv({
     SMTP_PASS: z.string(),
     EMAIL_FROM: z.string(),
     SENTRY_AUTH_TOKEN: z.string(),
-    NEXTAUTH_COOKIE_DOMAIN: z.string(),
+    NEXTAUTH_COOKIE_DOMAIN: isProd ? z.string() : z.string().optional(),
   },
 
   /**
