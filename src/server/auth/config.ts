@@ -97,12 +97,19 @@ export const authConfig = {
     verificationTokensTable: verificationTokens,
   }),
   callbacks: {
-    session: ({ session, user }: { session: DefaultSession; user: {id: string }}) => ({
+    session: ({
+      session,
+      user,
+    }: {
+      session: DefaultSession;
+      user: { id: string };
+    }) => ({
       ...session,
       user: {
         ...session.user,
         id: user.id,
       },
+      userId: user.id,
     }),
   },
   secret: env.NEXTAUTH_SECRET,
