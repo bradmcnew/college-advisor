@@ -76,6 +76,18 @@ export const authConfig = {
     maxAge: 2 * 60 * 60, // 2 hours
     updateAge: 30 * 60, // 30 minutes
   },
+  cookies: {
+    sessionToken: {
+      name: "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        domain: env.SESSION_COOKIE_DOMAIN,
+      },
+    },
+  },
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,

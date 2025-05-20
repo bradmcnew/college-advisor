@@ -39,6 +39,7 @@ export const env = createEnv({
     CAL_COM_SECRET_KEY: z.string(),
     EMAIL_FROM: z.string(),
     SENTRY_AUTH_TOKEN: z.string(),
+    SESSION_COOKIE_DOMAIN: z.string(),
   },
 
   /**
@@ -83,6 +84,7 @@ export const env = createEnv({
     CAL_COM_SECRET_KEY: process.env.CAL_COM_SECRET_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM,
     SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
+    SESSION_COOKIE_DOMAIN: process.env.SESSION_COOKIE_DOMAIN,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
