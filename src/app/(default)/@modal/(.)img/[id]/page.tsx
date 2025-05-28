@@ -1,7 +1,8 @@
 import { getPostById } from "~/server/queries";
+import { getProfile } from "~/server/queries";
+import { CalEmbedButton } from "~/app/components/cal-embed";
 import Image from "next/image";
 import { Modal } from "~/app/(default)/@modal/(.)img/[id]/modal";
-import Link from "next/link";
 import { requireAuth } from "~/lib/auth-utils";
 
 export default async function PostModal({
@@ -19,6 +20,8 @@ export default async function PostModal({
   }
 
   const post = await getPostById(idAsNumber);
+  const profile = await getProfile(post.createdById!);
+  const calcomUsername = profile?.calcomUsername;
 
   return (
     <Modal>
@@ -51,13 +54,12 @@ export default async function PostModal({
           </div>
 
           {/* Call to Action */}
-          <div className="mt-6">
-            <Link
-              href="/booking/payment"
-              className="inline-block rounded bg-blue-600 px-6 py-3 text-white hover:bg-blue-700"
-            >
-              Schedule a Video Meet
-            </Link>
+          <div className="mt-6 flex flex-col space-y-2">
+            {calcomUsername && (
+              <CalEmbedButton username={calcomUsername}>
+                View {post.name}&apos;s Calendar
+              </CalEmbedButton>
+            )}
           </div>
         </div>
       </div>

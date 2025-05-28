@@ -1,9 +1,11 @@
-import Link from "next/link";
 import Image from "next/image";
 import type { Card } from "~/app/types";
 import { getPostById } from "~/server/queries";
 import { notFound } from "next/navigation";
 import { requireAuth } from "~/lib/auth-utils";
+import { getProfile } from "~/server/queries";
+import { CalEmbedButton } from "~/app/components/cal-embed";
+import { Button } from "~/components/ui/button";
 
 export default async function PostPage({ id }: { id: string }) {
   await requireAuth();
@@ -16,10 +18,12 @@ export default async function PostPage({ id }: { id: string }) {
 
   try {
     const post: Card = await getPostById(postId);
+    const profile = await getProfile(post.createdById!);
+    const calcomUsername = profile?.calcomUsername;
 
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="mx-auto max-w-4xl overflow-hidden rounded-lg bg-card text-card-foreground shadow-lg transition-colors duration-200">
+        <div className="bg-card text-card-foreground mx-auto max-w-4xl overflow-hidden rounded-lg shadow-lg transition-colors duration-200">
           {/* Image Section */}
           <div className="relative h-80 w-full overflow-hidden">
             <Image
@@ -34,11 +38,11 @@ export default async function PostPage({ id }: { id: string }) {
 
           {/* Content Section */}
           <div className="p-6">
-            <h1 className="mb-4 text-3xl font-bold text-foreground">
+            <h1 className="text-foreground mb-4 text-3xl font-bold">
               {post.name ?? "Untitled Post"}
             </h1>
 
-            <div className="mb-6 flex items-center text-sm text-muted-foreground">
+            <div className="text-muted-foreground mb-6 flex items-center text-sm">
               <time dateTime={post.createdAt?.toISOString()}>
                 {post.createdAt?.toLocaleDateString("en-US", {
                   year: "numeric",
@@ -60,7 +64,7 @@ export default async function PostPage({ id }: { id: string }) {
             <div className="mt-6 flex flex-wrap gap-4">
               <div className="flex items-center">
                 <svg
-                  className="mr-2 h-5 w-5 text-primary"
+                  className="text-primary mr-2 h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -79,7 +83,7 @@ export default async function PostPage({ id }: { id: string }) {
               </div>
               <div className="flex items-center">
                 <svg
-                  className="mr-2 h-5 w-5 text-primary"
+                  className="text-primary mr-2 h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -99,14 +103,13 @@ export default async function PostPage({ id }: { id: string }) {
             </div>
 
             {/* Call to Action */}
-            <div className="mt-8">
-              <Link
-                href="/meet"
-                className="inline-block rounded bg-primary px-6 py-3 text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-900"
-                aria-label="Schedule a video meeting with this mentor"
-              >
-                Schedule a Video Meeting
-              </Link>
+            <div className="mt-8 flex flex-col space-y-2">
+              <Button>Schedule a Video Meeting</Button>
+              {calcomUsername && (
+                <CalEmbedButton username={calcomUsername}>
+                  View {post.name}&apos;s Calendar
+                </CalEmbedButton>
+              )}
             </div>
           </div>
         </div>

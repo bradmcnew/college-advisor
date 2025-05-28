@@ -1,15 +1,13 @@
-@import 'tailwindcss';
-
-@source '../../node_modules/.pnpm/@uploadthing+react@7.1.5_next@15.1.3_@babel+core@7.26.0_@opentelemetry+api@1.9.0_react-dom@18_ea7dxsmladxl5z3a66twch5exe/node_modules/@uploadthing/react/dist/**';
+@import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
   --font-sans:
     var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
-    BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-    'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);

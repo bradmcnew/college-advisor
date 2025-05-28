@@ -10,7 +10,6 @@ import {
   majors,
 } from "~/server/db/schema";
 import { eq, and, desc } from "drizzle-orm";
-import { UTApi } from "uploadthing/server";
 import { requireServerAuth } from "~/lib/auth-utils";
 
 export async function getPosts(limit = 20, offset = 0) {
@@ -266,6 +265,7 @@ export const getProfileWithImage = async (userId: string) => {
   return profile;
 };
 
+/* replace when vercel blob implement
 export const deleteUTImage = async (image: string) => {
   await requireServerAuth();
 
@@ -275,6 +275,9 @@ export const deleteUTImage = async (image: string) => {
     await utapi.deleteFiles(fileKey);
   }
 };
+*/
+
+/* replace when vercel blob implement
 
 export const updateProfileWithImage = async (
   userId: string,
@@ -327,7 +330,7 @@ export const updateProfileWithImage = async (
 
 export const updateUserProfile = async (
   userId: string,
-  data: { calcomUserId: number },
+  data: { calcomUsername: number },
 ) => {
   await requireServerAuth();
   await db
@@ -335,3 +338,4 @@ export const updateUserProfile = async (
     .set(data)
     .where(eq(userProfiles.userId, userId));
 };
+*/

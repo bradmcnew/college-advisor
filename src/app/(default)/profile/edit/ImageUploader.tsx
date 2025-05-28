@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { UploadButton } from "~/utils/uploadthing";
 import { Input } from "~/components/ui/input";
 import Image from "next/image";
 interface ImageUploaderProps {
@@ -46,6 +45,7 @@ export default function ImageUploader({ currentImage }: ImageUploaderProps) {
           No Image
         </div>
       )}
+      {/* replace when vercel blob implement
       <UploadButton
         endpoint="imageUploader"
         onClientUploadComplete={handleUploadComplete}
@@ -55,6 +55,7 @@ export default function ImageUploader({ currentImage }: ImageUploaderProps) {
           });
         }}
       />
+      */}
       <Input name="profile_image_url" type="hidden" value={imageUrl} readOnly />
     </div>
   );

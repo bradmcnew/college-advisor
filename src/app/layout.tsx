@@ -5,11 +5,6 @@ import { type Metadata } from "next";
 import { ThemeProvider } from "~/components/theme-provider";
 import { Toaster } from "sonner";
 
-// uploadthing
-import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
-import { extractRouterConfig } from "uploadthing/server";
-import { ourFileRouter } from "~/app/api/uploadthing/core";
-
 export const metadata: Metadata = {
   title: "College Advice - Your Guide to College Success",
   description:
@@ -33,7 +28,6 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
           {children}
           <Toaster />
         </ThemeProvider>
