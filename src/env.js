@@ -14,7 +14,6 @@ export const env = createEnv({
     AUTH_DISCORD_SECRET: z.string(),
     AUTH_GOOGLE_ID: z.string(),
     AUTH_GOOGLE_SECRET: z.string(),
-    AUTH_EMAIL_SERVER: z.string(),
     AUTH_EMAIL_FROM: z.string(),
     DATABASE_URL: z.string().url(),
     NODE_ENV: z
@@ -34,7 +33,6 @@ export const env = createEnv({
     SMTP_PASS: z.string(),
     EMAIL_FROM: z.string(),
     SENTRY_AUTH_TOKEN: z.string(),
-    NEXTAUTH_COOKIE_DOMAIN: isProd ? z.string() : z.string().optional(),
   },
 
   /**
@@ -58,7 +56,6 @@ export const env = createEnv({
     AUTH_GOOGLE_SECRET: process.env.AUTH_GOOGLE_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
-    AUTH_EMAIL_SERVER: process.env.AUTH_EMAIL_SERVER,
     AUTH_EMAIL_FROM: process.env.AUTH_EMAIL_FROM,
     JWT_SECRET: process.env.JWT_SECRET,
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
@@ -75,7 +72,6 @@ export const env = createEnv({
     SMTP_PASS: process.env.SMTP_PASS,
     EMAIL_FROM: process.env.EMAIL_FROM,
     SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
-    NEXTAUTH_COOKIE_DOMAIN: process.env.NEXTAUTH_COOKIE_DOMAIN,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

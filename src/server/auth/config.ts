@@ -35,8 +35,6 @@ declare module "next-auth" {
   // }
 }
 
-const isProd = process.env.NODE_ENV === "production";
-
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -78,18 +76,6 @@ export const authConfig = {
     maxAge: 2 * 60 * 60, // 2 hours
     updateAge: 30 * 60, // 30 minutes
   },
-  cookies: {
-    sessionToken: {
-      name: `${isProd ? "__Secure-" : ""}next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        secure: isProd,
-        sameSite: isProd ? "none" : "lax",
-        path: "/",
-        ...(isProd && { domain: env.NEXTAUTH_COOKIE_DOMAIN }),
-      },
-    },
-  },
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,
@@ -97,7 +83,13 @@ export const authConfig = {
     verificationTokensTable: verificationTokens,
   }),
   callbacks: {
-    session: ({ session, user }: { session: DefaultSession; user: {id: string }}) => ({
+    session: ({
+      session,
+      user,
+    }: {
+      session: DefaultSession;
+      user: { id: string };
+    }) => ({
       ...session,
       user: {
         ...session.user,

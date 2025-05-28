@@ -18,15 +18,8 @@ export default auth((req) => {
     path.startsWith("/api/auth/") ||
     path === "/pricing";
 
-  console.log("path", path);
-  console.log("isPublicPath", isPublicPath);
-  console.log("session", req.auth);
-  console.log("cookies", req.cookies.getAll());
-
   // Redirect logic
   if (!isPublicPath && !req.auth) {
-    // Redirect to login page
-    console.log("Redirect for: " + path);
     return NextResponse.redirect(new URL("/auth", req.url));
   }
 

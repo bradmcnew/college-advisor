@@ -7,10 +7,7 @@ interface VerificationResultProps {
   message: string;
 }
 
-const VerificationResult: React.FC<VerificationResultProps> = ({
-  success,
-  message,
-}) => {
+const VerificationResult = ({ success, message }: VerificationResultProps) => {
   useEffect(() => {
     if (success) {
       // Close the current tab after a short delay

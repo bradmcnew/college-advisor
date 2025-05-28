@@ -246,12 +246,9 @@ export const getProfilePic = async (userId: string) => {
 
 export const getProfile = async (userId: string) => {
   await requireServerAuth();
-
-  const profile = await db.query.userProfiles.findFirst({
+  return await db.query.userProfiles.findFirst({
     where: (model, { eq }) => eq(model.userId, userId),
   });
-
-  return profile;
 };
 
 export const getProfileWithImage = async (userId: string) => {
@@ -328,6 +325,17 @@ export const updateProfileWithImage = async (
       })
       .where(eq(users.id, userId));
   }
+};
+
+export const updateUserProfile = async (
+  userId: string,
+  data: { calcomUserId: number }
+) => {
+  await requireServerAuth();
+  await db
+    .update(userProfiles)
+    .set(data)
+    .where(eq(userProfiles.userId, userId));
 };
 
 /**

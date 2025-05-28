@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import jwt from "jsonwebtoken";
 import { db } from "~/server/db";
 import { env } from "~/env";
@@ -57,7 +56,7 @@ export default async function VerificationPage({
         message="Email verified successfully!"
       />
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error verifying email:", error);
     return (
       <VerificationResult
