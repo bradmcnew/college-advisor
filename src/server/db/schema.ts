@@ -8,9 +8,7 @@ import {
   varchar,
   check,
   boolean,
-  uuid,
   pgTableCreator,
-  serial,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 import { timestamps } from "~/server/db/columns.helpers";
@@ -67,9 +65,8 @@ export const postsRelations = relations(posts, ({ one }) => ({
   creator: one(users, { fields: [posts.createdById], references: [users.id] }), // Link 'createdById' with 'users.id'
 }));
 
-export const usersRelations = relations(users, ({ many, one }) => ({
+export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
-  stripeAccount: one(stripeAccounts),
 }));
 
 export const accounts = createTable(
@@ -161,7 +158,7 @@ export const userProfiles = createTable(
     eduEmail: varchar("edu_email", { length: 255 }).unique(),
     isEduVerified: boolean("is_edu_verified").notNull().default(false),
     isMentor: boolean("is_mentor").notNull().default(false),
-    calcomUserId: integer("calcom_user_id").unique(),
+    calcomUsername: varchar("calcom_username", { length: 255 }).unique(),
     ...timestamps,
   },
   (table) => ({
@@ -268,105 +265,3 @@ export const mentorReviews = createTable(
     ),
   }),
 );
-
-export const availability = createTable(
-  "availability",
-  {
-    id: uuid("id").defaultRandom().primaryKey(),
-    mentorId: varchar("mentor_id", { length: 255 })
-      .notNull()
-      .references(() => users.id),
-    startTime: timestamp("start_time", { withTimezone: true }).notNull(), // Start Time
-    endTime: timestamp("end_time", { withTimezone: true }).notNull(), // End Time
-    created_at: timestamp("created_at").notNull().defaultNow(),
-    updated_at: timestamp("updated_at").notNull().defaultNow(),
-  },
-  (table) => ({
-    timeRangeCheck: check(
-      "time_range_check",
-      sql`${table.endTime} > ${table.startTime}`,
-    ), // Ensures End Time is After Start Time
-  }),
-);
-
-export const availabilityRelations = relations(availability, ({ one }) => ({
-  mentor: one(users, {
-    fields: [availability.mentorId],
-    references: [users.id],
-  }),
-}));
-
-export const meetings = createTable(
-  "meeting",
-  {
-    id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-    mentorId: varchar("mentor_id", { length: 255 })
-      .notNull()
-      .references(() => users.id),
-    menteeId: varchar("mentee_id", { length: 255 }).references(() => users.id),
-    startTime: timestamp("start_time").notNull(),
-    endTime: timestamp("end_time").notNull(), // End Time of the Meeting
-    meeting_url: varchar("meeting_url", { length: 512 }).notNull(),
-    status: varchar("status", { length: 50 }).notNull().default("scheduled"), // Status: scheduled, completed, canceled
-    created_at: timestamp("created_at").notNull().defaultNow(),
-    updated_at: timestamp("updated_at").notNull().defaultNow(),
-  },
-  (table) => ({
-    mentorMenteeIdx: index("mentor_mentee_idx").on(
-      table.mentorId,
-      table.menteeId,
-    ),
-    startTimeIdx: index("start_time_idx").on(table.startTime),
-    statusCheck: check(
-      "status_check",
-      sql`${table.status} IN ('scheduled', 'completed', 'canceled')`,
-    ),
-  }),
-);
-
-export const meetingsRelations = relations(meetings, ({ one }) => ({
-  mentor: one(users, { fields: [meetings.mentorId], references: [users.id] }),
-  mentee: one(users, { fields: [meetings.menteeId], references: [users.id] }),
-}));
-
-export const calendlyTokens = createTable("calendly_tokens", {
-  id: serial("id").primaryKey(),
-  userId: varchar("user_id", { length: 255 })
-    .notNull()
-    .unique()
-    .references(() => users.id, { onDelete: "cascade" }),
-  accessToken: text("access_token").notNull(),
-  refreshToken: text("refresh_token").notNull(),
-  expiresAt: timestamp("expires_at").notNull(),
-  calendlyName: varchar("calendly_name", { length: 255 }),
-  calendlyEmail: varchar("calendly_email", { length: 255 }),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
-export const stripeAccounts = createTable(
-  "stripe_account",
-  {
-    id: serial("id").primaryKey(),
-    userId: varchar("user_id", { length: 255 })
-      .notNull()
-      .unique()
-      .references(() => users.id, { onDelete: "cascade" }),
-    stripeAccountId: varchar("stripe_account_id", { length: 255 })
-      .notNull()
-      .unique(), // e.g., acct_123...
-    onboardingComplete: boolean("onboarding_complete").notNull().default(false),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at").notNull().defaultNow(),
-  },
-  (table) => ({
-    userIdIdx: index("stripe_account_user_id_idx").on(table.userId),
-    stripeAccountIdIdx: index("stripe_account_stripe_account_id_idx").on(
-      table.stripeAccountId,
-    ),
-  }),
-);
-
-export const stripeAccountsRelations = relations(stripeAccounts, ({ one }) => ({
-  user: one(users, { fields: [stripeAccounts.userId], references: [users.id] }),
-}));

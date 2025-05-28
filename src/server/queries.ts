@@ -8,10 +8,8 @@ import {
   schools,
   userMajors,
   majors,
-  availability,
 } from "~/server/db/schema";
 import { eq, and, desc } from "drizzle-orm";
-import type { DayAvailability } from "~/app/types";
 import { UTApi } from "uploadthing/server";
 import { requireServerAuth } from "~/lib/auth-utils";
 
@@ -329,42 +327,11 @@ export const updateProfileWithImage = async (
 
 export const updateUserProfile = async (
   userId: string,
-  data: { calcomUserId: number }
+  data: { calcomUserId: number },
 ) => {
   await requireServerAuth();
   await db
     .update(userProfiles)
     .set(data)
     .where(eq(userProfiles.userId, userId));
-};
-
-/**
- * Sets the availability for a mentor.
- * @param payload Array of availability objects to be inserted.
- */
-export const setAvailability = async (payload: DayAvailability[]) => {
-  await requireServerAuth();
-
-  await db.insert(availability).values(payload);
-};
-
-/**
- * Deletes the availability for a mentor.
- * @param mentorId The ID of the mentor.
- */
-export const deleteAvailability = async (mentorId: string) => {
-  await requireServerAuth();
-
-  await db.delete(availability).where(eq(availability.mentorId, mentorId));
-};
-
-export const getAvailability = async (mentorId: string) => {
-  await requireServerAuth();
-
-  const availabilities = await db
-    .select()
-    .from(availability)
-    .where(eq(availability.mentorId, mentorId));
-
-  return availabilities;
 };
