@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { requireAuth } from "~/lib/auth-utils";
 import { getProfile } from "~/server/queries";
 import { CalEmbedButton } from "~/app/components/cal-embed";
-import { Button } from "~/components/ui/button";
 
 export default async function PostPage({ id }: { id: string }) {
   await requireAuth();
@@ -104,7 +103,6 @@ export default async function PostPage({ id }: { id: string }) {
 
             {/* Call to Action */}
             <div className="mt-8 flex flex-col space-y-2">
-              <Button>Schedule a Video Meeting</Button>
               {calcomUsername && (
                 <CalEmbedButton username={calcomUsername}>
                   View {post.name}&apos;s Calendar

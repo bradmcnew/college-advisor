@@ -10,7 +10,11 @@ import {
 import { DialogDescription } from "@radix-ui/react-dialog";
 import Link from "next/link";
 
-export function Modal({ children }: { children: React.ReactNode }) {
+type ModalProps = {
+  children: React.ReactNode;
+};
+
+export function Modal({ children }: ModalProps) {
   const router = useRouter();
   const [open, setOpen] = useState(true);
 

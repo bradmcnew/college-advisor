@@ -21,13 +21,18 @@ export function CalEmbedButton({
   namespace = "30min",
   children = "View schedule",
 }: CalEmbedButtonProps) {
-  const [calApi, setCalApi] = useState<((method: string, options?: object) => void) | null>(null);
+  const [calApi, setCalApi] = useState<
+    ((method: string, options?: object) => void) | null
+  >(null);
   const config = { layout: "month_view", hideEventTypeDetails: false };
 
   // Load the Cal.com embed API once on mount (or when namespace changes)
   useEffect(() => {
     let isMounted = true;
-    getCalApi({ namespace })
+    getCalApi({
+      namespace,
+      embedJsUrl: "https://mentor.discuno.com/embed/embed.js",
+    })
       .then((api) => {
         if (isMounted) setCalApi(() => api);
       })

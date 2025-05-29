@@ -21,7 +21,7 @@ export default async function PostModal({
 
   const post = await getPostById(idAsNumber);
   const profile = await getProfile(post.createdById!);
-  const calcomUsername = profile?.calcomUsername;
+  const username = profile?.calcomUsername;
 
   return (
     <Modal>
@@ -55,8 +55,8 @@ export default async function PostModal({
 
           {/* Call to Action */}
           <div className="mt-6 flex flex-col space-y-2">
-            {calcomUsername && (
-              <CalEmbedButton username={calcomUsername}>
+            {username && (
+              <CalEmbedButton username={username}>
                 View {post.name}&apos;s Calendar
               </CalEmbedButton>
             )}
