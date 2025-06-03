@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { getCalApi } from "@calcom/embed-react";
 import { Button } from "~/components/ui/button";
+import { useRouter } from "next/navigation";
 
 interface CalEmbedButtonProps {
   /** Cal.com username (e.g. "brad-mcnew-mhay1g") */
@@ -24,7 +25,11 @@ export function CalEmbedButton({
   const [calApi, setCalApi] = useState<
     ((method: string, options?: object) => void) | null
   >(null);
-  const config = { layout: "month_view", hideEventTypeDetails: false };
+  const router = useRouter();
+  const config = {
+    layout: "month_view",
+    hideEventTypeDetails: false,
+  };
 
   // Load the Cal.com embed API once on mount (or when namespace changes)
   useEffect(() => {
@@ -46,6 +51,7 @@ export function CalEmbedButton({
 
   // When clicked, open the Cal.com UI widget
   const handleClick = () => {
+    router.back();
     if (!calApi) {
       console.warn("Cal API is not initialized yet.");
       return;
