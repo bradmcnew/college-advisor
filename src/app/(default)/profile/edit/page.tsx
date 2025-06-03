@@ -10,9 +10,8 @@ import {
 } from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import ImageUploader from "~/app/(default)/profile/edit/ImageUploader";
 import StatusToast from "~/app/components/StatusToast";
-import { getProfileWithImage, updateProfileWithImage } from "~/server/queries";
+import { getProfileWithImage } from "~/server/queries";
 import { requireAuth } from "~/lib/auth-utils";
 
 // EditProfileProps Interface
@@ -79,12 +78,14 @@ export default async function EditProfilePage({
 
     try {
       // Update the userProfiles table with the additional information
+      /* TODO: Uncomment this when we have a way to update the profile image:w
       await updateProfileWithImage(userId, {
         bio,
         schoolYear,
         graduationYear,
         image: profileImageUrl ?? null,
       });
+      */
       // Redirect to the edit profile page upon successful update
       redirect("/profile/view");
     } catch (error: unknown) {
@@ -110,7 +111,9 @@ export default async function EditProfilePage({
     <>
       <form action={handleUpdateProfile} className="grid gap-3">
         <div className="flex items-center gap-4">
+          {/* TODO: Uncomment this when we have a way to update the profile image:w
           <ImageUploader currentImage={userProfile.user?.image ?? null} />
+          */}
           <div className="flex-1 text-center">
             <h1 className="text-2xl font-bold text-primary">
               Edit Your Profile
