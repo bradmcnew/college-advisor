@@ -1,29 +1,75 @@
-# Create T3 App
+# Discuno
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Connecting college mentors with high school students worldwide for personalized academic guidance.
 
-## What's next? How do I make an app with this?
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+---
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## What is Discuno?
 
-## Learn More
+**Discuno** is an open source mentorship platform that makes it easy for high school students to connect with experienced college mentors for academic and career advice.
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+- **Free & open source:** [discuno.com](https://discuno.com)
+- **Self-hosted by default, but designed to scale**
+- Built with [Cal.com](https://cal.com) for scheduling and video conferencing
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials!
+---
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+## Features
 
-## How do I deploy this?
+- 📅 Book 1:1 or group meetings with mentors
+- 💬 Secure, integrated video calls (Cal Video)
+- 📝 Mentor profiles and booking pages
+- 🔐 User authentication and secure scheduling
+- 📊 Admin dashboard for oversight and quality control
+- 💵 Payment integration (via Stripe)
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+---
+
+## Live Links
+
+- **Main Site:** [discuno.com](https://discuno.com)
+- **Mentor Portal:** [mentor.discuno.com](https://mentor.discuno.com)
+
+---
+
+## Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/bradmcnew/discuno.git
+   cd discuno
+   ```
+2. **Follow the setup instructions in /docs/INSTALL.md**
+3. **Configure your environment variables**
+4. **Deploy using Vercel, Docker, or your preferred cloud provider**
+
+---
+
+## Contributing
+
+We welcome contributions!
+To get started:
+- Fork the repo
+- Open an issue or discussion for major features/bugs
+- Open a pull request and describe your changes
+
+---
+
+[![Book us with Cal.com](https://cal.com/book-with-cal-dark.svg)](https://cal.com/discuno?utm_source=banner&utm_campaign=oss)
+
+---
+
+## License
+
+This project is licensed under the MIT License. See LICENSE for more details.
+
+---
+
+## Maintainer
+
+Brad McNew
+[discuno.com](https://discuno.com)
+[brad@discuno.com](mailto:brad@discuno.com)
+
