@@ -51,14 +51,14 @@
     "format:check": "prettier --check \"src/**/*.{ts,js}\" --cache"
   },
   "dependencies": {
-    "tailwindcss": "^4.1.10"
+    "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
     "@types/node": "^24.0.1",
     "typescript": "^5.8.3"
   },
   "peerDependencies": {
-    "tailwindcss": "^4.0.0"
+    "tailwindcss": "^4.1.11"
   },
   "packageManager": "pnpm@10.12.1"
 }
